@@ -1,0 +1,25 @@
+.container {
+  float: left;
+  height: 400px;
+  width: 700px;
+  background: #FFFFFF;
+  border:1px solid black;
+}
+
+.content {
+  height: 300px;
+  width: 700px;
+  overflow: auto;
+  background: #FFFFFF;
+  border:1px solid black;
+}
+
+.chart rect {
+  fill: #d9f2e6;
+}
+
+.chart text {
+  fill: black;
+  font: 12px "Lucida Console", Monaco, monospace;
+  text-anchor: start;
+}
