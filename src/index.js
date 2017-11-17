@@ -64,8 +64,9 @@ function getgit() {
     const exec = require('./proc-exec');
     console.log('exec:', exec, typeof exec);
     const command = "git log --graph --pretty=format:'|=;%h|=;%p|=;%d|=;%s|=;%cd|=;%an|=;' --abbrev-commit --date=short --decorate=full";
-    exec.command(command, function(stdout_stderr) {
+    exec.command(command, function(stdout, stderr) {
       console.log('command:', command);
-      console.log('response:', stdout_stderr);
+      console.log('response:', stdout);
+      console.log('error:', stderr);
     });
 }

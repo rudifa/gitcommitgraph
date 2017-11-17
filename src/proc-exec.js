@@ -11,7 +11,7 @@ const command = function(command, callback) {
       }
       //console.log('Stdout value: ' + stdout);
       //console.log('Stderror value: ' + stderr);
-      callback(stdout + stderr);
+      callback(stdout, stderr);
    });
 
    parentproc.on('exit', function (code) {
@@ -24,3 +24,4 @@ module.exports = {
 };
 
 // see http://knowledgehills.com/nodejs/node-js-child-process-creation.htm
+// see https://nodejs.org/api/child_process.html#child_process_child_process_execfile_file_args_options_callback
