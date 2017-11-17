@@ -68,5 +68,4 @@ function getgit() {
       console.log('command:', command);
       console.log('response:', stdout_stderr);
     });
-
 }
