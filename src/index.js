@@ -1,5 +1,4 @@
 import { app, BrowserWindow } from 'electron';
-//const { app, BrowserWindow } = require('electron');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -13,7 +12,7 @@ let mainWindow;
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 1200,
     height: 600,
   });
 
@@ -30,9 +29,6 @@ const createWindow = () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-
-  getgit();
-
 };
 
 // This method will be called when Electron has finished
@@ -60,13 +56,4 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
-function getgit() {
-    const exec = require('./proc-exec');
-    console.log('exec:', exec, typeof exec);
-    const command = "git log --graph --pretty=format:'|=;%h|=;%p|=;%d|=;%s|=;%cd|=;%an|=;' --abbrev-commit --date=short --decorate=full";
-    exec.command(command, function(stdout, stderr) {
-      console.log('command:', command);
-      console.log('response:', stdout);
-      console.log('error:', stderr);
-    });
-}
+// Or, load main.js from insex.html
