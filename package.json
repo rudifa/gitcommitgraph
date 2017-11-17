@@ -1,6 +1,6 @@
 {
-    "name": "d3-gitgraph",
-    "productName": "d3-gitgraph",
+    "name": "gitcommitgraph",
+    "productName": "gitcommitgraph",
     "version": "1.0.0",
     "description": "My Electron application description",
     "main": "src/index.js",
@@ -33,7 +33,7 @@
                 "packageManager": "npm"
             },
             "electronWinstallerConfig": {
-                "name": "d3_gitgraph"
+                "name": "gitcommitgraph"
             },
             "electronInstallerDebian": {},
             "electronInstallerRedhat": {},
@@ -43,7 +43,7 @@
             },
             "windowsStoreConfig": {
                 "packageName": "",
-                "name": "d3gitgraph"
+                "name": "gitcommitgraph"
             }
         }
     },
