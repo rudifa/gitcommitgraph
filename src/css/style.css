@@ -1,14 +1,15 @@
 .container {
   float: left;
-  height: 400px;
+  height: 600px;
   width: 700px;
   background: #FFFFFF;
   border:1px solid black;
+  font: 12px "Lucida Console", Monaco, monospace;
 }
 
 .content {
-  height: 300px;
-  width: 700px;
+  height: 550px;
+  width: 699px;
   overflow: auto;
   background: #FFFFFF;
   border:1px solid black;

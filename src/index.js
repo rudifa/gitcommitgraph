@@ -1,5 +1,13 @@
 import { app, BrowserWindow } from 'electron';
 
+const add_application_menu = require('./appmenu.js');
+
+//require('electron-reload')([__dirname, __dirname + '/../../gitdir-sample-only']);
+require('electron-reload')([__dirname, '/Users/rudifarkas/Dev/js/electron/gitdir-sample-only']);
+// it seems to watch the 2nd dirName, provided that it is absolute and resolved
+console.log('__dirname=', __dirname);
+//console.log('__dirname=', __dirname + '/../../gitdir-sample-only');
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
@@ -10,6 +18,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow;
 
 const createWindow = () => {
+  console.log('=> createWindow');
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -29,7 +38,18 @@ const createWindow = () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  setApplicationMenu();
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('did-finish-load');
+    // signal renderer to get directory from settings and use it
+    mainWindow.webContents.send('dir-selected', null);
+  });
+
+  console.log('<= createWindow');
 };
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -53,7 +73,26 @@ app.on('activate', () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+function setApplicationMenu() {
+  add_application_menu(get_and_open_git_directory, get_git_log_order);
+}
 
-// Or, load main.js from insex.html
+function get_and_open_git_directory() {
+  console.log('get_and_open_git_directory =>');
+  const { dialog } = require('electron');
+  dialog.showOpenDialog({ properties: [ 'openDirectory' ]}, function (dirNames) {
+
+      if (dirNames === undefined) {
+         console.log("No directory selected");
+      } else {
+        console.log("main: directory selected=", dirNames[0]);
+        // Send async message to renderer process
+        mainWindow.webContents.send('dir-selected', dirNames[0]);
+      }
+   });
+}
+
+function get_git_log_order(order) {
+  console.log("get_git_log_order:", order);
+  mainWindow.webContents.send('git-log-order', order);
+}
