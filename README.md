@@ -3,7 +3,7 @@ of commits in a project using __git__.
 
 `npm start` runs the app.
 
-"require('electron-reload')([__dirname]);" reloads the app window on code changes.
+`require('electron-reload')([__dirname]);` in `view_gitgraph.js` reloads the app window on code changes.
 
 `mocha` runs regression tests.
 
@@ -36,7 +36,7 @@ DONE:
 TODO:
 - improve arc shapes
 - minimize overlapping of arcs and unrelated nodes
-- expand user settings
+- expand user settings: separate handler; use config module (?)
 - simplify node placement code
 - separate columns for author, date, subject etc, scrollable and adjustable in width
 - tooltips for full length text

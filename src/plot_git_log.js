@@ -1,7 +1,7 @@
 const d3 = require('d3');
 const colormap = require('colormap');
 
-let colors = colormap({
+const colors = colormap({
   colormap: 'bluered',
   nshades: 7,
   format: 'hex',
@@ -18,13 +18,28 @@ function add_colors(arcs) {
   }
 }
 
-const plot_git_log = function(dir, nodes_and_arcs) {
+const plot_git_log = function(dir, nodes_and_arcs, arc_style) {
+
+  console.log('plot_git_log:', 'dir=', dir, 'arc_style=', arc_style)
+
+  function arc_path(arc_style) {
+    const paths = {
+      "linear": path_L,
+      "cubic-bézier": path_C,
+      "quadratic-bézier": path_Q,
+      "cubic-bézier-vertical": path_CL,
+      "quadratic-bézier-vertical": path_QL
+    };
+    const path = paths[arc_style];
+    return path ? path : path_L;
+  }
+
 
   const rowWidth = 700;
   const rowHeight = 25;
   const colSpacing = 20;
 
-  d3.select('h5').text(dir);
+  d3.select('h4').text(dir);
 
   // define scaling functions for col, row
   const sx = d3
@@ -50,7 +65,7 @@ const plot_git_log = function(dir, nodes_and_arcs) {
     .enter()
     .append('g')
     .attr('transform', function(d) {
-      return 'translate(0,' + sy(d.row - 0.5) + ')';
+      return `translate(0,${sy(d.row - 0.5)})`;
     });
 
   bar
@@ -180,7 +195,8 @@ const plot_git_log = function(dir, nodes_and_arcs) {
       .attr('stroke-width', 2)
       .attr('fill', 'none');
   };
-  plot_arcs(nodes_and_arcs.arcs, path_C);
+
+  plot_arcs(nodes_and_arcs.arcs, arc_path(arc_style));
   plot_nodes(nodes_and_arcs.nodes);
 };
 

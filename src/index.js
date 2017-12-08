@@ -22,14 +22,14 @@ const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1200,
-    height: 600,
+    height: 600
   });
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools({mode:'undocked'});
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -39,7 +39,7 @@ const createWindow = () => {
     mainWindow = null;
   });
 
-  setApplicationMenu();
+  add_application_menu();
 
   mainWindow.webContents.on('did-finish-load', () => {
     console.log('did-finish-load');
@@ -47,9 +47,10 @@ const createWindow = () => {
     mainWindow.webContents.send('dir-selected', null);
   });
 
+  console.log('userData', app.getPath('userData'));
+
   console.log('<= createWindow');
 };
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -72,27 +73,3 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
-function setApplicationMenu() {
-  add_application_menu(get_and_open_git_directory, get_git_log_order);
-}
-
-function get_and_open_git_directory() {
-  console.log('get_and_open_git_directory =>');
-  const { dialog } = require('electron');
-  dialog.showOpenDialog({ properties: [ 'openDirectory' ]}, function (dirNames) {
-
-      if (dirNames === undefined) {
-         console.log("No directory selected");
-      } else {
-        console.log("main: directory selected=", dirNames[0]);
-        // Send async message to renderer process
-        mainWindow.webContents.send('dir-selected', dirNames[0]);
-      }
-   });
-}
-
-function get_git_log_order(order) {
-  console.log("get_git_log_order:", order);
-  mainWindow.webContents.send('git-log-order', order);
-}
