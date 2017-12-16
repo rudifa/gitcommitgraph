@@ -1,13 +1,16 @@
-`gitcommitgrph` is an exercise in creating an Electron application for viewing the graph
+`gitcommitgraph` is an exercise in creating an Electron application for viewing the graph
 of commits in a project using __git__.
 
 `npm start` runs the app.
 
 `require('electron-reload')([__dirname]);` in `view_gitgraph.js` reloads the app window on code changes.
 
-`mocha` runs regression tests.
+`electron-mocha` runs regression tests, or equivalently
 
-`mocha --watch --recursive` runs regression tests on code changes.
+`npm test`
+
+`mocha --watch --recursive` runs regression tests on code changes -- not any more.
+We now use `electron-mocha`, to be able to test modules using the electron app.
 
 
 Work in progress.
