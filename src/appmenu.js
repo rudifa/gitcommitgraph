@@ -4,28 +4,28 @@ function add_application_menu() {
 
   const settings = require('electron-settings');
 
-  const value = settings.getAll();
-  console.log('settings value:', value);
+  // const value = settings.getAll();
+  // console.log('settings value:', value);
 
   function set_arc_style(style) {
-    console.log('arc-style', style);
+    // console.log('arc-style', style);
     settings.set('arc-style', style);
   }
 
   function set_git_log_order(order) {
-    console.log('git-log-order', order);
+    // console.log('git-log-order', order);
     settings.set('git-log-order', order);
   }
 
   function set_git_directory() {
-    console.log('set_git_directory =>');
+    // console.log('set_git_directory =>');
     // const { dialog } = require('electron');
     dialog.showOpenDialog({ properties: [ 'openDirectory' ]}, function (dirNames) {
 
         if (dirNames === undefined) {
-           console.log("No directory selected");
+           // console.log("No directory selected");
         } else {
-          console.log("menu: directory selected=", dirNames[0]);
+          // console.log("menu: directory selected=", dirNames[0]);
           settings.set('git-directory', dirNames[0]);
         }
      });

@@ -1,7 +1,7 @@
 .container {
   float: left;
   height: 600px;
-  width: 700px;
+  width: 900px;
   background: #FFFFFF;
   border:1px solid black;
   font: 12px "Lucida Console", Monaco, monospace;
@@ -9,14 +9,14 @@
 
 .content {
   height: 550px;
-  width: 699px;
+  width: 898px;
   overflow: auto;
   background: #FFFFFF;
   border:1px solid black;
 }
 
 .chart rect {
-  fill: #d9f2e6;
+  fill: #e9f0f0;
 }
 
 .chart text {

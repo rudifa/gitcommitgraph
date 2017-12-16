@@ -18,12 +18,12 @@ function getMenuItem(menu, label) {
 }
 
 
-console.log('typeof appmenu.items', typeof appmenu.items);
-console.log('appmenu.items.length', appmenu.items.length);
-console.log('typeof appmenu.items[0]', typeof appmenu.items[0]);
-for (let i = 0; i < appmenu.items.length; i++) {
-  console.log('i=', i, appmenu.items[i].label)
-}
+// console.log('typeof appmenu.items', typeof appmenu.items);
+// console.log('appmenu.items.length', appmenu.items.length);
+// console.log('typeof appmenu.items[0]', typeof appmenu.items[0]);
+// for (let i = 0; i < appmenu.items.length; i++) {
+//   console.log('i=', i, appmenu.items[i].label)
+// }
 
 describe('appmenu', function() {
 

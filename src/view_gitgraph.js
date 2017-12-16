@@ -4,16 +4,16 @@ const { ipcRenderer } = require('electron');
 // const settings = require('electron-settings');
 const settings = require('electron').remote.require('electron-settings');
 
+// Listen for messages from main
+ipcRenderer.on('render-now', (event, directory) => {
+  get_git_log_and_plot();
+});
+
 settings.watch('arc-style', (newValue, oldValue) => {
   get_git_log_and_plot();
 });
 
 settings.watch('git-log-order', (newValue, oldValue) => {
-  get_git_log_and_plot();
-});
-
-// Listen for messages from main
-ipcRenderer.on('dir-selected', (event, directory) => {
   get_git_log_and_plot();
 });
 

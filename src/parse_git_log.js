@@ -1,4 +1,10 @@
-
+module.exports = {
+  get_commit_objects_from_lines: get_commit_objects_from_lines,
+  get_commit_nodes_and_arcs: get_commit_nodes_and_arcs,
+  internal: { // expose for unit tests
+    _parse_refs: _parse_refs
+  }
+};
 
 
 var console = { log: function(){} }; // comment out to enable log
@@ -29,6 +35,31 @@ const { Colowners } = require('../src/utils-set.js');
 
 */
 
+
+  function _parse_refs(line) {
+    // parse strings obtained with
+    // git log --all --pretty=format:'¡¨¡%d¡¨¡' --decorate=full
+    // (HEAD -> refs/heads/master, refs/remotes/origin/master, refs/remotes/origin/HEAD) // remote: ignore for now
+    // (HEAD -> refs/heads/master, tag: refs/tags/test, refs/heads/dev, refs/heads/abc,def)
+    let refsres = { current: [], branches: [], tags: [] };
+    let arr;
+    let frags = line.split(', ');
+    const re_refs = /(HEAD -> )?refs\/(heads|tags)\/([-,\w]+)/; // may need to add other characters
+    for (let j = 0; j < frags.length; j++) {
+      if ((arr = re_refs.exec(frags[j])) !== null) {
+        // console.log('i,j=', i, j, 'arr=', arr)
+        if (arr[1] == 'HEAD -> ' && arr[2] == 'heads') {
+          refsres.current.push(arr[3]);
+        } else if (arr[2] == 'heads') {
+          refsres.branches.push(arr[3]);
+        } else if (arr[2] == 'tags') {
+          refsres.tags.push(arr[3]);
+        }
+      }
+    }
+    return refsres;
+  }
+
 function get_commit_objects_from_lines(lines) {
   // lines: input array of text lines, e.g.
   // | * ¡¨¡bcc51ee¡¨¡ad82167¡¨¡ (tag: refs/tags/rudifa)¡¨¡Added the Prettyprint extension:¡¨¡2013-11-03¡¨¡Rudi Farkas¡¨¡
@@ -42,7 +73,7 @@ function get_commit_objects_from_lines(lines) {
         graph: cp[0],
         sha: cp[1],
         parents: cp[2] ? cp[2].split(' ') : [],
-        refs: cp[3],
+        refs: _parse_refs(cp[3]),
         summary: cp[4],
         date: cp[5],
         author: cp[6]
@@ -186,8 +217,3 @@ function get_commit_arcs(nodes) {
   }
   return arcs;
 }
-
-module.exports = {
-  get_commit_objects_from_lines: get_commit_objects_from_lines,
-  get_commit_nodes_and_arcs: get_commit_nodes_and_arcs
-};

@@ -22,11 +22,33 @@ const jtw_arc = function(arc) { // json_test_view_arc
   return jtw_object(arc[0], ['col', 'row', 'sha']) + '-' + jtw_object(arc[1], ['col', 'row', 'sha']);
 }
 
+describe('parse_refs', function(){
 
-describe('sample_test', function(){
-  it('should pass', function(){
-    expect(true);
-  })
+  const parse_refs = parse_git_log.internal._parse_refs;
+
+  const lines = [ // test cases
+    " (HEAD -> refs/heads/master)",
+    " (refs/heads/dev1, refs/heads/dev2, refs/heads/dev,maybe)",
+    " (tag: refs/tags/tag-start, tag: refs/tags/tag-end)",
+    " (HEAD -> refs/heads/master, refs/heads/dev1, tag: refs/tags/test1, refs/heads/dev2, tag: refs/tags/test2)"
+  ];
+
+  function for_dev(){
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      // console.log('i=', i, 'line=', line);
+      let refsres = parse_refs(line);
+      // console.log('i=', i, 'refsres=', refsres, '\n');
+    }
+  }
+
+  it('parse_refs should return arrays of current, branches and tags', function(){
+    expect('{"current":["master"],"branches":[],"tags":[]}').to.equal(JSON.stringify(parse_refs(" (HEAD -> refs/heads/master)")));
+    expect('{"current":[],"branches":["dev1","dev2"],"tags":[]}').to.equal(JSON.stringify(parse_refs(" (refs/heads/dev1, refs/heads/dev2)")));
+    expect('{"current":[],"branches":[],"tags":["tag-start","tag-end"]}').to.equal(JSON.stringify(parse_refs(" (tag: refs/tags/tag-start, tag: refs/tags/tag-end)")));
+    expect('{"current":["master"],"branches":["dev1","dev2"],"tags":["test1","test2"]}').to.equal(JSON.stringify(parse_refs(" (HEAD -> refs/heads/master, refs/heads/dev1, tag: refs/tags/test1, refs/heads/dev2, tag: refs/tags/test2)")));
+  });
+
 })
 
 

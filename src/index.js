@@ -3,7 +3,7 @@ import { app, BrowserWindow } from 'electron';
 const add_application_menu = require('./appmenu.js');
 
 //require('electron-reload')([__dirname, __dirname + '/../../gitdir-sample-only']);
-require('electron-reload')([__dirname, '/Users/rudifarkas/Dev/js/electron/gitdir-sample-only']);
+require('electron-reload')([__dirname]);
 // it seems to watch the 2nd dirName, provided that it is absolute and resolved
 console.log('__dirname=', __dirname);
 //console.log('__dirname=', __dirname + '/../../gitdir-sample-only');
@@ -18,11 +18,10 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow;
 
 const createWindow = () => {
-  console.log('=> createWindow');
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1200,
-    height: 600
+    height: 800
   });
 
   // and load the index.html of the app.
@@ -42,14 +41,12 @@ const createWindow = () => {
   add_application_menu();
 
   mainWindow.webContents.on('did-finish-load', () => {
-    console.log('did-finish-load');
     // signal renderer to get directory from settings and use it
-    mainWindow.webContents.send('dir-selected', null);
+    mainWindow.webContents.send('render-now', null);
   });
 
-  console.log('userData', app.getPath('userData'));
+  console.log('userData:', app.getPath('userData'));
 
-  console.log('<= createWindow');
 };
 
 // This method will be called when Electron has finished

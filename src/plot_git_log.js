@@ -18,9 +18,25 @@ function add_colors(arcs) {
   }
 }
 
+function refs_text(node) { // preliminary text
+  let text = '';
+  let refs = node.commit.refs;
+  if (refs.current.length) {
+    text += `[C: ${refs.current[0]}] `;
+  }
+  for (let i = 0; i < refs.branches.length; i++) {
+    text += `[B: ${refs.branches[i]}] `;
+  }
+  for (let i = 0; i < refs.tags.length; i++) {
+    text += `[T: ${refs.tags[i]}] `;
+  }
+  // console.log('refs_text=', text)
+  return text;
+}
+
 const plot_git_log = function(dir, nodes_and_arcs, arc_style) {
 
-  console.log('plot_git_log:', 'dir=', dir, 'arc_style=', arc_style)
+  // console.log('plot_git_log:', 'dir=', dir, 'arc_style=', arc_style)
 
   function arc_path(arc_style) {
     const paths = {
@@ -35,7 +51,7 @@ const plot_git_log = function(dir, nodes_and_arcs, arc_style) {
   }
 
 
-  const rowWidth = 700;
+  const rowWidth = 900;
   const rowHeight = 25;
   const colSpacing = 20;
 
@@ -88,7 +104,7 @@ const plot_git_log = function(dir, nodes_and_arcs, arc_style) {
       .attr('y', rowHeight / 2)
       .attr('dy', '.35em') // adjust vertical position of text in bar
       .text(function(d) {
-        return `${d.commit.summary}  ${d.commit.author}  ${d.commit.date}`;
+        return refs_text(d) + `${d.commit.summary}  ${d.commit.author}  ${d.commit.date}`;
       });
 
   const plot_nodes = function(nodes) {
