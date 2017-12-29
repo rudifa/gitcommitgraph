@@ -12,7 +12,7 @@ const Colowners = function() {
   let _max_used_col = -1;
   this.set_node_col = function(node, col) {
     node.col = col;
-    _colowners[col] = node.sha;
+    _colowners[col] = node.commit.sha;
     if (_max_used_col < col) {
       _max_used_col = col;
     }
@@ -27,7 +27,7 @@ const Colowners = function() {
     _max_used_col = col;
   }
   this.owns_its_col = function (node) {
-    return _colowners[node.col] == node.sha;
+    return _colowners[node.col] == node.commit.sha;
   }
   this.first_free_col = function() {
     for (let col = 0; col < 1000; col++) {

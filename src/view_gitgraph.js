@@ -1,4 +1,3 @@
-console.log('view_gitgraph ...');
 
 const { ipcRenderer } = require('electron');
 // const settings = require('electron-settings');
@@ -30,7 +29,7 @@ function get_sample_and_plot() {
 function get_git_log_and_plot() {
 
   let directory = settings.get('git-directory', '');
-  console.log('renderer: directory=', directory);
+  // console.log('renderer: directory=', directory);
 
   const exec = require('./proc-exec');
   // console.log('exec:', exec, typeof exec);
@@ -38,7 +37,7 @@ function get_git_log_and_plot() {
   const git_log_order = settings.get('git-log-order', 'topo-order');
   const command = `git -C ${directory} log --${git_log_order} --graph --all --pretty=format:'¡¨¡%h¡¨¡%p¡¨¡%d¡¨¡%s¡¨¡%ci¡¨¡%an¡¨¡' --abbrev-commit --date=short --decorate=full`;
   exec.command(command, function(stdout, stderr) {
-    console.log('command:', command);
+    // console.log('command:', command);
     // console.log('response:', stdout);
     // console.log('error:', stderr);
     if (stderr.match(/^(error|fatal): /)) {

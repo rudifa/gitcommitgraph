@@ -143,12 +143,12 @@ function get_commit_nodes(commit_objects, verbose) {
       commit: commit
     }
     nodes.push(node)
-    node_dict[node.commit.sha] = nodes[i]
+    node_dict[node.commit.sha] = node
   }
 
   // 2. add children sha array to each node
 
-  console.log('adding children, from i=0 down')
+  // console.log('adding children, from i=0 down')
   for (let i = 0; i < nodes.length; i++) {
     // for (var i = nodes.length - 1; i >= 0; i--) {
     const node = nodes[i]
@@ -229,11 +229,13 @@ function get_commit_nodes(commit_objects, verbose) {
       }
     }
 
+    // console.log(JSON.stringify(node))
+
     if (node.col < 0) {
       console.log('***', 'node.col < 0')
     }
   } // end of i loop
-  console.log('nodes done')
+  // console.log('nodes done')
 
   return nodes
 }
