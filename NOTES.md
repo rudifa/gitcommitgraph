@@ -28,6 +28,13 @@ TODO:
 - first work out a connection for arc line type along using the mechanism discussed above
   if OK, migrate other Settings
 
+TODO:
+- revise Colowners:
+-- probably should tighten methods, so that getting the first free column and
+giving it to a node are in the same method
+-- probably should also set node column to -1 when freed, if owned 
+
+
 
 SEE ALSO:
 [Bit-Booster - Offline Commit Graph Drawing Tool](http://bit-booster.com/graph.html)
