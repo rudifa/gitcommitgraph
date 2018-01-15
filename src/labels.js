@@ -35,7 +35,7 @@ function rowOfLabelWithBg() {
   }
 
   function inner(selection) {
-    selection.each(function(data_row, i_row) {
+    selection.each(function() {
       d3
         .select(this)
         .append('g')
