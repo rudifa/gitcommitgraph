@@ -1,14 +1,25 @@
 
 const childproc = require('child_process');
 
+const options = {
+  encoding: 'utf8',
+  timeout: 0,
+  maxBuffer: 3000 * 1024, // from default 200 * 1024
+  killSignal: 'SIGTERM',
+  cwd: null,
+  env: null
+};
+
 const command = function(command, callback) {
-  var parentproc = childproc.exec(command, function(error, stdout, stderr) {
+  var parentproc = childproc.exec(command, options, function(error, stdout, stderr) {
 
     if (error) {
-      // console.log(error.stack);
-      // console.log('Error Code: '+error.code);
-      // console.log('Reason of error: '+error.signal);
+      console.log(error.stack);
+      console.log('Error Code: '+error.code);
+      console.log('Reason of error: '+error.signal);
+      console.log('stderr: '+stderr);
     }
+    console.log('stdout.length:', stdout.length);
     //console.log('Stdout value: ' + stdout);
     //console.log('Stderror value: ' + stderr);
     callback(stdout, stderr);

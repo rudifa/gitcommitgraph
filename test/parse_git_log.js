@@ -55,22 +55,24 @@ const jtw_arc = function(arc) {
 describe('parse_refs', function() {
   const parse_refs = parse_git_log.internal._parse_refs
 
-  it('parse_refs should return arrays of current, branches and tags', function() {
-    expect('{"current":["master"],"branches":[],"tags":[]}').to.equal(
-      JSON.stringify(parse_refs(' (HEAD -> refs/heads/master)'))
-    )
-    expect('{"current":[],"branches":["dev1","dev2"],"tags":[]}').to.equal(
+  it('parse_refs should return array of 2-element arrays', function() {
+    expect('[]').to.equal(JSON.stringify(parse_refs('')))
+    expect('[["HEAD","master"]]').to.equal(JSON.stringify(parse_refs(' (HEAD -> refs/heads/master)')))
+    expect('[["BRANCH","dev1"],["BRANCH","dev2"]]').to.equal(
       JSON.stringify(parse_refs(' (refs/heads/dev1, refs/heads/dev2)'))
     )
-    expect('{"current":[],"branches":[],"tags":["tag-start","tag-end"]}').to.equal(
+    expect('[["TAG","tag-start"],["TAG","tag-end"]]').to.equal(
       JSON.stringify(parse_refs(' (tag: refs/tags/tag-start, tag: refs/tags/tag-end)'))
     )
-    expect('{"current":["master"],"branches":["dev1","dev2"],"tags":["test1","test2"]}').to.equal(
+    expect('[["HEAD","master"],["BRANCH","dev1"],["TAG","test1"],["BRANCH","dev2"],["TAG","test2"]]').to.equal(
       JSON.stringify(
         parse_refs(
           ' (HEAD -> refs/heads/master, refs/heads/dev1, tag: refs/tags/test1, refs/heads/dev2, tag: refs/tags/test2)'
         )
       )
+    )
+    expect('[["HEAD","master"],["REMOTE","origin/master"],["REMOTE","origin/HEAD"]]').to.equal(
+      JSON.stringify(parse_refs(' (HEAD -> refs/heads/master, refs/remotes/origin/master, refs/remotes/origin/HEAD)'))
     )
   })
 })
@@ -116,7 +118,6 @@ describe('sample_git_log.A_single_merge', function() {
   // arcs TODO
 })
 
-
 describe('sample_git_log.B_branches_only', function() {
   const log_lines = sample_git_log.B_branches_only() // from --order-topo
   // console.log('log_lines', log_lines)
@@ -145,7 +146,9 @@ describe('sample_git_log.B_branches_only', function() {
     expect(jtw_commit(commits[2])).to.equal('{"sha":"1f7f761","parents":["419429a"],"children":["7165a30","4b8a42d"]}')
     expect(jtw_commit(commits[3])).to.equal('{"sha":"331947e","parents":["419429a"],"children":[]}')
     expect(jtw_commit(commits[4])).to.equal('{"sha":"7ba98b0","parents":["419429a"],"children":[]}')
-    expect(jtw_commit(commits[5])).to.equal('{"sha":"419429a","parents":["2882080"],"children":["1f7f761","331947e","7ba98b0"]}')
+    expect(jtw_commit(commits[5])).to.equal(
+      '{"sha":"419429a","parents":["2882080"],"children":["1f7f761","331947e","7ba98b0"]}'
+    )
     expect(jtw_commit(commits[6])).to.equal('{"sha":"2882080","parents":[],"children":["419429a"]}')
   })
 
@@ -176,7 +179,6 @@ describe('sample_git_log.B_branches_only', function() {
   })
 })
 
-
 describe('sample_git_log.C_merge_3_into_master', function() {
   const log_lines = sample_git_log.C_merge_3_into_master() // from --order-topo
   // console.log('log_lines', log_lines)
@@ -205,7 +207,9 @@ describe('sample_git_log.C_merge_3_into_master', function() {
     expect(jtw_commit(commits[4])).to.equal('{"sha":"69cccee","parents":["5168e7a","6b2cb75"],"children":["6e3cc48"]}')
     expect(jtw_commit(commits[5])).to.equal('{"sha":"6b2cb75","parents":["8857cdb"],"children":["69cccee"]}')
     expect(jtw_commit(commits[6])).to.equal('{"sha":"5168e7a","parents":["8857cdb"],"children":["69cccee"]}')
-    expect(jtw_commit(commits[7])).to.equal('{"sha":"8857cdb","parents":[],"children":["5168e7a","694959a","1b8f801","6b2cb75"]}')
+    expect(jtw_commit(commits[7])).to.equal(
+      '{"sha":"8857cdb","parents":[],"children":["5168e7a","694959a","1b8f801","6b2cb75"]}'
+    )
   })
 
   // nodes
@@ -252,12 +256,16 @@ describe('sample_git_log.D_octo_merge_3_into_master', function() {
   it('expect commits:', function() {
     expect(8).to.equal(commits.length)
     expect(jtw_commit(commits[0])).to.equal('{"sha":"6b49d9e","parents":["3c36210"],"children":[]}')
-    expect(jtw_commit(commits[1])).to.equal('{"sha":"3c36210","parents":["d72c16c","a759c98","d7a9ecb","d8c031b"],"children":["6b49d9e"]}')
+    expect(jtw_commit(commits[1])).to.equal(
+      '{"sha":"3c36210","parents":["d72c16c","a759c98","d7a9ecb","d8c031b"],"children":["6b49d9e"]}'
+    )
     expect(jtw_commit(commits[2])).to.equal('{"sha":"d8c031b","parents":["d275fba"],"children":["3c36210"]}')
     expect(jtw_commit(commits[3])).to.equal('{"sha":"d7a9ecb","parents":["d275fba"],"children":["3c36210"]}')
     expect(jtw_commit(commits[4])).to.equal('{"sha":"a759c98","parents":["d275fba"],"children":["3c36210"]}')
     expect(jtw_commit(commits[5])).to.equal('{"sha":"d72c16c","parents":["d275fba"],"children":["3c36210"]}')
-    expect(jtw_commit(commits[6])).to.equal('{"sha":"d275fba","parents":["3cfe6bd"],"children":["d72c16c","a759c98","d7a9ecb","d8c031b"]}')
+    expect(jtw_commit(commits[6])).to.equal(
+      '{"sha":"d275fba","parents":["3cfe6bd"],"children":["d72c16c","a759c98","d7a9ecb","d8c031b"]}'
+    )
     expect(jtw_commit(commits[7])).to.equal('{"sha":"3cfe6bd","parents":[],"children":["d275fba"]}')
   })
 
@@ -307,7 +315,9 @@ describe('sample_git_log.E_demo_col_init_error', function() {
     expect(jtw_commit(commits[0])).to.equal('{"sha":"7a42c73","parents":["33bd179"],"children":[]}')
     expect(jtw_commit(commits[1])).to.equal('{"sha":"62039f3","parents":["12b4472"],"children":[]}')
     expect(jtw_commit(commits[2])).to.equal('{"sha":"967dbb2","parents":["12b4472"],"children":[]}')
-    expect(jtw_commit(commits[3])).to.equal('{"sha":"12b4472","parents":["afec16a","33bd179"],"children":["62039f3","967dbb2"]}')
+    expect(jtw_commit(commits[3])).to.equal(
+      '{"sha":"12b4472","parents":["afec16a","33bd179"],"children":["62039f3","967dbb2"]}'
+    )
     expect(jtw_commit(commits[4])).to.equal('{"sha":"33bd179","parents":["5b59f30"],"children":["7a42c73","12b4472"]}')
     expect(jtw_commit(commits[5])).to.equal('{"sha":"afec16a","parents":["5b59f30"],"children":["12b4472"]}')
     expect(jtw_commit(commits[6])).to.equal('{"sha":"5b59f30","parents":["e2c32ae"],"children":["33bd179","afec16a"]}')

@@ -1,9 +1,15 @@
+
+module.exports = {
+  plot_git_log: plot_git_log
+}
+
+
 const d3 = require('d3')
 const colormap = require('colormap')
 
 const colors = colormap({
-  colormap: 'bluered',
-  nshades: 7,
+  colormap: 'rainbow',
+  nshades: 11,
   format: 'hex',
   alpha: 1
 })
@@ -14,7 +20,8 @@ function add_colors(arcs) {
     const arc = arcs[i]
     const [p0, p1] = arcs[i]
     const colcol = p1.col > p0.col ? p1.col : p0.col
-    arcs[i]['color'] = colors[colcol % clen]
+    arcs[i]['color'] = colors[2 * colcol % clen]
+    // arcs[i]['color'] = colors[i % clen] // NO GOOD
   }
 }
 
@@ -22,14 +29,8 @@ function node_texts(node) {
   // preliminary text
   let texts = []
   let refs = node.commit.refs
-  if (refs.current.length) {
-    texts.push(`[C: ${refs.current[0]}]`)
-  }
-  for (let i = 0; i < refs.branches.length; i++) {
-    texts.push(`[B: ${refs.branches[i]}]`)
-  }
-  for (let i = 0; i < refs.tags.length; i++) {
-    texts.push(`[T: ${refs.tags[i]}]`)
+  for (let i = 0; i < refs.length; i++) {
+    texts.push(`[${refs[i][0]}: ${refs[i][1]}]`)
   }
   texts.push(node.commit.summary)
   texts.push(node.commit.author)
@@ -37,11 +38,11 @@ function node_texts(node) {
   return texts
 }
 
-function plot_node_texts(chart, nodes, sx, sy, rowWidth, rowHeight, colSpacing) {
+function plot_node_texts(chart, nodes, xSc, ySc, rowWidth, rowHeight, colSpacing) {
   // console.log('chart', chart)
   // console.log('nodes', JSON.stringify(nodes))
-  // console.log('sx', sx)
-  // console.log('sy', sy)
+  // console.log('xSc', xSc)
+  // console.log('ySc', ySc)
   // console.log('rowWidth, rowHeight, colSpacing', rowWidth, rowHeight, colSpacing)
 
   const bar = chart
@@ -50,13 +51,14 @@ function plot_node_texts(chart, nodes, sx, sy, rowWidth, rowHeight, colSpacing) 
     .enter()
     .append('g')
     .attr('transform', function(d) {
-      return `translate(0,${sy(d.row - 0.5)})`
+      return `translate(0,${ySc(d.row - 0.5)})`
     })
 
   bar
     .append('rect')
     .attr('width', rowWidth)
-    .attr('height', rowHeight - 1)
+    .attr('height', rowHeight)
+    .style('fill', function(d,i) { return i%2 ? '#ffffff' : '#f2f2f2'})
 
   bar
     .append('text')
@@ -79,6 +81,7 @@ function plot_node_texts(chart, nodes, sx, sy, rowWidth, rowHeight, colSpacing) 
 
 function plot_git_log(dir, nodes_and_arcs, arc_style) {
   // console.log('plot_git_log:', 'dir=', dir, 'arc_style=', arc_style)
+  const { nodes, arcs, aux_nodes } = nodes_and_arcs
 
   function arc_path(arc_style) {
     const paths = {
@@ -93,32 +96,36 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
   }
 
   const rowWidth = 900
-  const rowHeight = 25
-  const colSpacing = 20
+  const rowHeight = 18
+  const colSpacing = 18
 
   d3.select('h4').text(dir)
 
   // define scaling functions for col, row
-  const sx = d3
+  const xSc = d3
     .scaleLinear()
-    .domain([0, 1]) // row
-    .range([4 * colSpacing, 5 * colSpacing]) // col
+    .domain([0, 1])
+    .range([4 * colSpacing, 5 * colSpacing])
 
-  const sy = d3
+  const ySc = d3
     .scaleLinear()
-    .domain([0, 1]) // col
-    .range([0.5 * rowHeight, 1.5 * rowHeight]) // row
+    .domain([0, 1])
+    .range([0.5 * rowHeight, 1.5 * rowHeight])
 
   const chart = d3
     .select('.chart')
     .attr('width', rowWidth)
-    .attr('height', rowHeight * nodes_and_arcs.nodes.length)
+    .attr('height', rowHeight * nodes.length)
 
   chart.selectAll('*').remove()
 
-  plot_node_texts(chart, nodes_and_arcs.nodes, sx, sy, rowWidth, rowHeight, colSpacing)
-  plot_arcs(nodes_and_arcs.arcs, arc_path(arc_style))
-  plot_nodes(nodes_and_arcs.nodes)
+  plot_node_texts(chart, nodes, xSc, ySc, rowWidth, rowHeight, colSpacing)
+
+  plot_arcs(arcs, arc_path(arc_style))
+
+  plot_nodes(nodes)
+
+  plot_aux_nodes(aux_nodes) // development only
 
   function plot_nodes(nodes) {
     chart
@@ -128,19 +135,37 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
       .append('circle')
       .attr('r', 4)
       .attr('cx', function(d) {
-        return sx(d.col)
+        return xSc(d.col)
       })
       .attr('cy', function(d) {
-        return sy(d.row)
+        return ySc(d.row)
       })
       .attr('stroke', 'black')
       .attr('fill', 'white')
   }
 
+
+    function plot_aux_nodes(nodes) {
+      chart
+        .selectAll('.node')
+        .data(nodes)
+        .enter()
+        .append('circle')
+        .attr('r', 4)
+        .attr('cx', function(d) {
+          return xSc(d.col)
+        })
+        .attr('cy', function(d) {
+          return ySc(d.row)
+        })
+        .attr('stroke', 'black')
+        .attr('fill', 'red')
+    }
+
   // return svg command sequence for straight line from p0 to p1
   function path_L(d) {
     const [p0, p1] = d
-    return `M ${sx(p0.col)} ${sy(p0.row)} L ${sx(p1.col)} ${sy(p1.row)}`
+    return `M ${xSc(p0.col)} ${ySc(p0.row)} L ${xSc(p1.col)} ${ySc(p1.row)}`
   }
 
   // return svg command sequence for quadratic bezier line from p0 to p1
@@ -149,7 +174,7 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
     const [p0, p1] = d
     const pc = p1.col >= p0.col ? { col: p1.col, row: p0.row } : { col: p0.col, row: p1.row }
     return (
-      `M ${sx(p0.col)} ${sy(p0.row)}` + `Q ${sx(pc.col)} ${sy(pc.row)} ${sx(p1.col)} ${sy(p1.row)}`
+      `M ${xSc(p0.col)} ${ySc(p0.row)}` + `Q ${xSc(pc.col)} ${ySc(pc.row)} ${xSc(p1.col)} ${ySc(p1.row)}`
     )
   }
 
@@ -183,8 +208,8 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
     // const c0 = { col: p0.col, row: p1.row };
     // const c1 = { col: p1.col, row: p0.row };
     return (
-      `M ${sx(p0.col)} ${sy(p0.row)}` +
-      `C ${sx(c0.col)} ${sy(c0.row)} ${sx(c1.col)} ${sy(c1.row)} ${sx(p1.col)} ${sy(p1.row)}`
+      `M ${xSc(p0.col)} ${ySc(p0.row)}` +
+      `C ${xSc(c0.col)} ${ySc(c0.row)} ${xSc(c1.col)} ${ySc(c1.row)} ${xSc(p1.col)} ${ySc(p1.row)}`
     )
   }
 
@@ -222,8 +247,4 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
       .attr('stroke-width', 2)
       .attr('fill', 'none')
   }
-}
-
-module.exports = {
-  plot_git_log: plot_git_log
 }

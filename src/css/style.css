@@ -15,12 +15,8 @@
   border:1px solid black;
 }
 
-.chart rect {
-  fill: #f2f2f2;
-}
-
 .chart text {
   fill: black;
-  font: 12px "Lucida Console", Monaco, monospace;
+  font: 11px "Lucida Console", monaco, monospace;
   text-anchor: start;
 }
