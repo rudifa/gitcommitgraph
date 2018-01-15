@@ -1,11 +1,10 @@
-
 module.exports = {
   plot_git_log: plot_git_log
 }
 
-
 const d3 = require('d3')
 const colormap = require('colormap')
+const { labelWithBg, rowOfLabelWithBg } = require('./labels.js')
 
 const colors = colormap({
   colormap: 'rainbow',
@@ -20,7 +19,7 @@ function add_colors(arcs) {
     const arc = arcs[i]
     const [p0, p1] = arcs[i]
     const colcol = p1.col > p0.col ? p1.col : p0.col
-    arcs[i]['color'] = colors[2 * colcol % clen]
+    arcs[i]['color'] = colors[(2 * colcol) % clen]
     // arcs[i]['color'] = colors[i % clen] // NO GOOD
   }
 }
@@ -58,25 +57,66 @@ function plot_node_texts(chart, nodes, xSc, ySc, rowWidth, rowHeight, colSpacing
     .append('rect')
     .attr('width', rowWidth)
     .attr('height', rowHeight)
-    .style('fill', function(d,i) { return i%2 ? '#ffffff' : '#f2f2f2'})
+    .style('fill', function(d, i) {
+      return i % 2 ? '#ffffff' : '#f2f2f2'
+    })
 
   bar
     .append('text')
     .attr('x', 0.5 * colSpacing)
-    .attr('y', rowHeight * 0.65)
+    .attr('y', rowHeight * 0.75)
     .text(function(d) {
       return `${d.commit.sha}`
     })
 
-  bar
-    .append('text')
-    .attr('x', function(d) {
-      return colSpacing * (5 + d.max_used_col)
+  // bar
+  //   .append('text')
+  //   .attr('x', function(d) {
+  //     return colSpacing * (5 + d.max_used_col)
+  //   })
+  //   .attr('y', rowHeight * 0.65)
+  //   .text(function(d) {
+  //     return node_texts(d).join(' ')
+  //   })
+
+  // alternate
+
+  const labelWithBg1 = labelWithBg()
+    .text(function (d) {
+      return d[1]
     })
-    .attr('y', rowHeight * 0.65)
-    .text(function(d) {
-      return node_texts(d).join(' ')
+    .bgColor(labelBgColor)
+
+  const rowOfLabelWithBg1 = rowOfLabelWithBg()
+    .labelWithBg(labelWithBg1)
+    .xRow(function(d) {
+      return xSc(1 + d.max_used_col)
     })
+    .yRow(function(d) {
+      return rowHeight * 0.1
+    })
+    .textsRow(function(d) {
+      const textsRow = d.commit.refs
+      textsRow.push(['SUMMARY', d.commit.summary])
+      return textsRow
+    })
+
+  bar.call(rowOfLabelWithBg1)
+
+  function labelBgColor(d) {
+    switch (d[0]) {
+      case 'HEAD':
+        return '#f4b76f'
+      case 'BRANCH':
+        return '#b5e19d'
+      case 'TAG':
+        return '#faec90'
+      case 'REMOTE':
+        return '#b8d7ef'
+      default:
+        return 'transparent'
+    }
+  }
 }
 
 function plot_git_log(dir, nodes_and_arcs, arc_style) {
@@ -144,23 +184,22 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
       .attr('fill', 'white')
   }
 
-
-    function plot_aux_nodes(nodes) {
-      chart
-        .selectAll('.node')
-        .data(nodes)
-        .enter()
-        .append('circle')
-        .attr('r', 4)
-        .attr('cx', function(d) {
-          return xSc(d.col)
-        })
-        .attr('cy', function(d) {
-          return ySc(d.row)
-        })
-        .attr('stroke', 'black')
-        .attr('fill', 'red')
-    }
+  function plot_aux_nodes(nodes) {
+    chart
+      .selectAll('.node')
+      .data(nodes)
+      .enter()
+      .append('circle')
+      .attr('r', 4)
+      .attr('cx', function(d) {
+        return xSc(d.col)
+      })
+      .attr('cy', function(d) {
+        return ySc(d.row)
+      })
+      .attr('stroke', 'black')
+      .attr('fill', 'red')
+  }
 
   // return svg command sequence for straight line from p0 to p1
   function path_L(d) {
@@ -173,9 +212,7 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
   function path_Q(d) {
     const [p0, p1] = d
     const pc = p1.col >= p0.col ? { col: p1.col, row: p0.row } : { col: p0.col, row: p1.row }
-    return (
-      `M ${xSc(p0.col)} ${ySc(p0.row)}` + `Q ${xSc(pc.col)} ${ySc(pc.row)} ${xSc(p1.col)} ${ySc(p1.row)}`
-    )
+    return `M ${xSc(p0.col)} ${ySc(p0.row)}` + `Q ${xSc(pc.col)} ${ySc(pc.row)} ${xSc(p1.col)} ${ySc(p1.row)}`
   }
 
   // return svg command sequence for a combined curve (optional linear + quadratic Bezier)

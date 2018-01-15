@@ -127,7 +127,7 @@ function get_commit_objects_from_lines(lines) {
 
 function get_commit_nodes(commit_objects, verbose) {
   if (verbose) {
-    console = window.console
+    // console = window.console
   }
 
   // 1. from array of commits, create array of nodes and the node_dict
