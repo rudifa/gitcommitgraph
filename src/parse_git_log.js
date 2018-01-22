@@ -127,7 +127,7 @@ function get_commit_objects_from_lines(lines) {
 
 function get_commit_nodes(commit_objects, verbose) {
   if (verbose) {
-    // console = window.console
+    console = window.console
   }
 
   // 1. from array of commits, create array of nodes and the node_dict
@@ -139,7 +139,6 @@ function get_commit_nodes(commit_objects, verbose) {
     commit.children = []
     const node = {
       col: -1, // == unassigned
-      cols: [],
       row: i,
       commit: commit
     }
@@ -171,11 +170,10 @@ function get_commit_nodes(commit_objects, verbose) {
 
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i]
-    console.log('i=', i)
+    console.log(`i= ${i}  nc:np ${node.commit.children.length}:${node.commit.parents.length}`)
 
     if (node.commit.children.length == 0) {
       colowners.set_node_col(node, colowners.first_free_col())
-      node.cols.unshift(node.col)
       console.log(`    ${node.commit.sha} childless, takes a free col ${node.col}`)
     }
 
@@ -188,7 +186,6 @@ function get_commit_nodes(commit_objects, verbose) {
         console.log(`    ${node.commit.sha} branch frees col ${cnode.col}`)
         colowners.free_col(node.col)
         colowners.set_node_col(node, cnode.col)
-        node.cols.unshift(node.col)
         console.log(`    ${node.commit.sha} branch takes col from child[${0}]`, cnode.col)
       }
 
@@ -211,17 +208,15 @@ function get_commit_nodes(commit_objects, verbose) {
       // console.log(pnode_0.col)
       if (pnode_0.col < 0) {
         colowners.set_node_col(pnode_0, node.col)
-        pnode_0.cols.unshift(pnode_0.col)
-        console.log(`    ${node.commit.sha} merge pushing own col to parent_0 ${pnode_0.commit.sha}:`, pnode_0.col)
+        console.log(`    ${node.commit.sha} pushing own col to parent_0 ${pnode_0.commit.sha}:`, pnode_0.col)
       } else {
-        console.log(`--- ${node.commit.sha} merge: parent_${0} ${pnode_0.commit.sha}: already has col ${pnode_0.col}`)
+        console.log(`--- ${node.commit.sha} parent_${0} ${pnode_0.commit.sha}: already has col ${pnode_0.col}`)
       }
       for (let j = 1; j < node.commit.parents.length; j++) {
         // merge node
         const pnode_j = parent(j, node, node_dict)
         if (pnode_j.col < 0) {
           colowners.set_node_col(pnode_j, colowners.first_free_col())
-          pnode_j.cols.unshift(pnode_j.col)
           console.log(
             `    ${node.commit.sha} merge pushing free col to parent_${j} ${pnode_j.commit.sha}:`,
             pnode_j.col
@@ -235,6 +230,7 @@ function get_commit_nodes(commit_objects, verbose) {
     }
 
     // console.log(JSON.stringify(node))
+    console.log('    ' + colowners.toString())
 
     if (node.col < 0) {
       console.log('***', 'node.col < 0')
@@ -290,17 +286,19 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
     const node = nodes[i]
     for (let j = 0; j < node.commit.parents.length; j++) {
       const pnode = parent(j, node, node_dict)
-      const use_aux_nodes = 1
-      if (use_aux_nodes && pnode.cols[1] != undefined && pnode.cols[1] != node.col && pnode.row - node.row > 1) {
-        const aux_node = { row: pnode.row - 1, col: pnode.cols[1] }
-        aux_nodes.push(aux_node)
-        arcs.push([node, aux_node])
-        arcs.push([aux_node, pnode])
-        console.log(
-          `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${
-            pnode.row
-          })  aux_node (${aux_node.col},${aux_node.row})`
-        )
+      const use_aux_nodes = 0
+      if (use_aux_nodes == 1 && pnode.row - node.row > 1) {
+        // const aux_node = { row: pnode.row - 1, col: pnode.cols[1] }
+        // aux_nodes.push(aux_node)
+        // arcs.push([node, aux_node])
+        // arcs.push([aux_node, pnode])
+        // console.log(
+        //   `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${
+        //     pnode.row
+        //   })  aux_node (${aux_node.col},${aux_node.row})`
+        // )
+      } else if (use_aux_nodes == 2 && pnode.row - node.row > 1 ) {
+        // TODO ... get a free col for aux node, but whom does it belong to?
       } else {
         arcs.push([node, pnode])
         console.log(
