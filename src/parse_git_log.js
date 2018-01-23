@@ -215,6 +215,10 @@ function get_commit_nodes(commit_objects, verbose) {
       for (let j = 1; j < node.commit.parents.length; j++) {
         // merge node
         const pnode_j = parent(j, node, node_dict)
+        // for info
+        if (pnode_0.row > pnode_j.row) {
+          console.log(`>>> parent rows ${pnode_0.row} > ${pnode_j.row}`)
+        }
         if (pnode_j.col < 0) {
           colowners.set_node_col(pnode_j, colowners.first_free_col())
           console.log(
@@ -282,24 +286,34 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
   console.log('get_commit_arcs_and_aux_nodes')
   const arcs = []
   const aux_nodes = []
+  const halfColowners = new Colowners()
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i]
+    const use_aux_nodes = 3
+
+
     for (let j = 0; j < node.commit.parents.length; j++) {
       const pnode = parent(j, node, node_dict)
-      const use_aux_nodes = 2
-      if (use_aux_nodes == 1 && pnode.row - node.row > 1) {
-        // const aux_node = { row: pnode.row - 1, col: pnode.cols[1] }
-        // aux_nodes.push(aux_node)
-        // arcs.push([node, aux_node])
-        // arcs.push([aux_node, pnode])
-        // console.log(
-        //   `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${
-        //     pnode.row
-        //   })  aux_node (${aux_node.col},${aux_node.row})`
-        // )
-      } else if (use_aux_nodes == 2 && node.col > pnode.col && pnode.row - node.row > 1 && j > 0) {
+
+      if (use_aux_nodes == 3) {
+        if (node.commit.parents.length > 1) {
+          if (pnode.col != node.col && pnode.row - node.row > 1) {
+            for (let k = node.row+1; k < pnode.row; ++k) {
+              const arcCol = pnode.col > node.col ? pnode.col : node.col
+              if (arcCol == nodes[k].col) {
+                console.log(`**** conflict ahead node.col ${node.col} with node (${nodes[k].col},${nodes[k].row})`)
+                aux_nodes.push(nodes[k])
+                break
+              }
+            }
+          }
+        }
+      }
+
+      if (use_aux_nodes == 2 && node.col > pnode.col && pnode.row - node.row > 1 && j > 0) {
         // TODO ... get a free col for aux node, but whom does it belong to?
-        const aux_node = { col: node.col - 0.5, row: node.row + 1 }
+        const halfCol = halfColowners.mark_col(node, halfColowners.first_free_col())
+        const aux_node = { col: halfCol + 0.5, row: node.row + 1 }
         aux_nodes.push(aux_node)
         arcs.push([node, aux_node])
         arcs.push([aux_node, pnode])

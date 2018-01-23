@@ -190,7 +190,7 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
       .data(nodes)
       .enter()
       .append('circle')
-      .attr('r', 4)
+      .attr('r', 2)
       .attr('cx', function(d) {
         return xSc(d.col)
       })
