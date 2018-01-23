@@ -294,6 +294,7 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
 
     for (let j = 0; j < node.commit.parents.length; j++) {
       const pnode = parent(j, node, node_dict)
+      let pending = true
 
       if (use_aux_nodes == 3) {
         if (node.commit.parents.length > 1) {
@@ -302,7 +303,13 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
               const arcCol = pnode.col > node.col ? pnode.col : node.col
               if (arcCol == nodes[k].col) {
                 console.log(`**** conflict ahead node.col ${node.col} with node (${nodes[k].col},${nodes[k].row})`)
-                aux_nodes.push(nodes[k])
+                // aux_nodes.push(nodes[k])
+                const halfCol = halfColowners.mark_col(node, halfColowners.first_free_col())
+                const aux_node = { col: halfCol + 0.5, row: nodes[k].row }
+                aux_nodes.push(aux_node)
+                arcs.push([node, aux_node])
+                arcs.push([aux_node, pnode])
+                pending = false
                 break
               }
             }
@@ -310,19 +317,20 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
         }
       }
 
-      if (use_aux_nodes == 2 && node.col > pnode.col && pnode.row - node.row > 1 && j > 0) {
-        // TODO ... get a free col for aux node, but whom does it belong to?
-        const halfCol = halfColowners.mark_col(node, halfColowners.first_free_col())
-        const aux_node = { col: halfCol + 0.5, row: node.row + 1 }
-        aux_nodes.push(aux_node)
-        arcs.push([node, aux_node])
-        arcs.push([aux_node, pnode])
-        console.log(
-          `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${
-            pnode.row
-          })  aux_node (${aux_node.col},${aux_node.row})`
-        )
-      } else {
+      // if (use_aux_nodes == 2 && node.col > pnode.col && pnode.row - node.row > 1 && j > 0) {
+      //   // TODO ... get a free col for aux node, but whom does it belong to?
+      //   const halfCol = halfColowners.mark_col(node, halfColowners.first_free_col())
+      //   const aux_node = { col: halfCol + 0.5, row: node.row + 1 }
+      //   aux_nodes.push(aux_node)
+      //   arcs.push([node, aux_node])
+      //   arcs.push([aux_node, pnode])
+      //   console.log(
+      //     `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${
+      //       pnode.row
+      //     })  aux_node (${aux_node.col},${aux_node.row})`
+      //   )
+      // }
+      if (pending) {
         arcs.push([node, pnode])
         console.log(
           `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${pnode.row})`
