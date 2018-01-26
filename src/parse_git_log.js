@@ -208,7 +208,7 @@ function get_commit_nodes(commit_objects, verbose) {
       // console.log(pnode_0.col)
       if (pnode_0.col < 0) {
         colowners.set_node_col(pnode_0, node.col)
-        console.log(`    ${node.commit.sha} pushing own col to parent_0 ${pnode_0.commit.sha}:`, pnode_0.col)
+        console.log(`    ${node.commit.sha} pushing own col to parent_0 ${pnode_0.commit.sha}: -1 -> ${pnode_0.col}`)
       } else {
         console.log(`--- ${node.commit.sha} parent_${0} ${pnode_0.commit.sha}: already has col ${pnode_0.col}`)
       }
@@ -222,12 +222,10 @@ function get_commit_nodes(commit_objects, verbose) {
         if (pnode_j.col < 0) {
           colowners.set_node_col(pnode_j, colowners.first_free_col())
           console.log(
-            `    ${node.commit.sha} merge pushing free col to parent_${j} ${pnode_j.commit.sha}:`,
-            pnode_j.col
-          )
+            `    ${node.commit.sha} merge pushing free col to parent_${j} ${pnode_j.commit.sha}: -1 -> ${pnode_j.col}`)
         } else {
           console.log(
-            `--- ${node.commit.sha} merge: parent_${j} ${pnode_j.commit.sha}: already has a value ${pnode_j.col}`
+            `--- ${node.commit.sha} merge: parent_${j} ${pnode_j.commit.sha}: already has col ${pnode_j.col}`
           )
         }
       }
