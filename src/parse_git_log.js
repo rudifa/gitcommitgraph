@@ -203,11 +203,24 @@ function get_commit_nodes(commit_objects, verbose) {
     node.max_used_col = colowners.max_used_col()
 
     if (node.commit.parents.length > 0) {
-      
       sort_parents_by_row(node, node_dict)
 
       // plain or merge node
       const pnode_0 = parent(0, node, node_dict)
+
+      // fix_pattern_1
+      const pnode_1 = parent(1, node, node_dict)
+
+      if (node.commit.parents.length > 1 && pnode_1.col > -1) {
+        if (pnode_0.col < 0) {
+          colowners.set_node_col(pnode_0, colowners.first_free_col())
+          console.log(
+            `    ${node.commit.sha} merge pushing free col to parent_${0} ${pnode_0.commit.sha}: -1 -> ${pnode_0.col}`
+          )
+        }
+      }
+      // fix_pattern_1 end
+
       // console.log(pnode_0.col)
       if (pnode_0.col < 0) {
         colowners.set_node_col(pnode_0, node.col)
@@ -298,14 +311,12 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
     for (let j = 0; j < node.commit.parents.length; j++) {
       const pnode = parent(j, node, node_dict)
 
-
       if (use_aux_nodes == 1) {
         arcs.push([node, pnode])
         console.log(
           `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${pnode.row})`
         )
       }
-
 
       if (use_aux_nodes == 3) {
         let pending = true
