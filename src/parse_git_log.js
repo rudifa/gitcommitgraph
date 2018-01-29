@@ -208,18 +208,19 @@ function get_commit_nodes(commit_objects, verbose) {
       // plain or merge node
       const pnode_0 = parent(0, node, node_dict)
 
-      // fix_pattern_1
-      const pnode_1 = parent(1, node, node_dict)
+      const fix_patt_1 = true
+      if (fix_patt_1) {
+        const pnode_1 = parent(1, node, node_dict)
 
-      if (node.commit.parents.length > 1 && pnode_1.col > -1) {
-        if (pnode_0.col < 0) {
-          colowners.set_node_col(pnode_0, colowners.first_free_col())
-          console.log(
-            `    ${node.commit.sha} merge pushing free col to parent_${0} ${pnode_0.commit.sha}: -1 -> ${pnode_0.col}`
-          )
+        if (node.commit.parents.length > 1 && pnode_1.col > -1) {
+          if (pnode_0.col < 0) {
+            colowners.set_node_col(pnode_0, colowners.first_free_col())
+            console.log(
+              `    ${node.commit.sha} merge pushing free col to parent_${0} ${pnode_0.commit.sha}: -1 -> ${pnode_0.col}`
+            )
+          }
         }
       }
-      // fix_pattern_1 end
 
       // console.log(pnode_0.col)
       if (pnode_0.col < 0) {

@@ -77,8 +77,8 @@ describe('parse_refs', function() {
   })
 })
 
-describe('sample_git_log.A_single_merge', function() {
-  const log_lines = sample_git_log.A_single_merge()
+describe('sample_git_log.A_single_merge__topo', function() {
+  const log_lines = sample_git_log.A_single_merge__topo()
   // console.log('log_lines', log_lines)
 
   const commits = parse_git_log.get_commit_objects_from_lines(log_lines)
@@ -118,8 +118,8 @@ describe('sample_git_log.A_single_merge', function() {
   // arcs TODO
 })
 
-describe('sample_git_log.B_branches_only', function() {
-  const log_lines = sample_git_log.B_branches_only() // from --order-topo
+describe('sample_git_log.B_branches_only__topo', function() {
+  const log_lines = sample_git_log.B_branches_only__topo() // from --order-topo
   // console.log('log_lines', log_lines)
 
   const commits = parse_git_log.get_commit_objects_from_lines(log_lines)
@@ -179,8 +179,8 @@ describe('sample_git_log.B_branches_only', function() {
   })
 })
 
-describe('sample_git_log.C_merge_3_into_master', function() {
-  const log_lines = sample_git_log.C_merge_3_into_master() // from --order-topo
+describe('sample_git_log.C_merge_3_into_master__topo', function() {
+  const log_lines = sample_git_log.C_merge_3_into_master__topo() // from --order-topo
   // console.log('log_lines', log_lines)
 
   const commits = parse_git_log.get_commit_objects_from_lines(log_lines)
@@ -234,8 +234,8 @@ describe('sample_git_log.C_merge_3_into_master', function() {
   })
 })
 
-describe('sample_git_log.F_octo_merge_3_into_master', function() {
-  const log_lines = sample_git_log.D_octo_merge_3_into_master() // from --order-topo
+describe('sample_git_log.F_octo_merge_3_into_master__topo', function() {
+  const log_lines = sample_git_log.F_octo_merge_3_into_master__topo() // from --order-topo
   // console.log('log_lines', log_lines)
 
   const commits = parse_git_log.get_commit_objects_from_lines(log_lines)
@@ -291,8 +291,8 @@ describe('sample_git_log.F_octo_merge_3_into_master', function() {
   })
 })
 
-describe('sample_git_log.G_demo_col_init_error', function() {
-  const log_lines = sample_git_log.E_demo_col_init_error() // from --order-topo
+describe('sample_git_log.G_demo_col_init_error__topo', function() {
+  const log_lines = sample_git_log.G_demo_col_init_error__topo() // from --order-topo
   // console.log('log_lines', log_lines)
 
   const commits = parse_git_log.get_commit_objects_from_lines(log_lines)
@@ -345,6 +345,66 @@ describe('sample_git_log.G_demo_col_init_error', function() {
     expect(8).to.equal(arcs.length)
   })
 })
+
+
+
+describe('sample_git_log.G_demo_col_init_error__date', function() {
+  const log_lines = sample_git_log.G_demo_col_init_error__date() // from --order-topo
+  // console.log('log_lines', log_lines)
+
+  const commits = parse_git_log.get_commit_objects_from_lines(log_lines)
+  const nodes_and_arcs = parse_git_log.get_commit_nodes_and_arcs(commits)
+  const { nodes, arcs } = parse_git_log.get_commit_nodes_and_arcs(commits)
+
+  // log_lines
+  it('expect log_lines:', function() {
+    expect(13).to.equal(log_lines.length)
+    expect(log_lines[0]).to.equal(
+      '* ¡¨¡7a42c73¡¨¡33bd179¡¨¡commit 8 on branch bre¡¨¡Fri Nov 24 23:22:37 2017 +0100¡¨¡rudifa¡¨¡ (bre)¡¨¡'
+    )
+    expect(log_lines[12]).to.equal('* ¡¨¡e2c32ae¡¨¡¡¨¡initial commit¡¨¡Fri Nov 24 22:54:03 2017 +0100¡¨¡rudifa¡¨¡¡¨¡')
+  })
+
+  // commits
+  // console.log('commits', commits)
+  it('expect commits:', function() {
+    expect(8).to.equal(commits.length)
+    expect(jtw_commit(commits[0])).to.equal('{"sha":"7a42c73","parents":["33bd179"],"children":[]}')
+    expect(jtw_commit(commits[1])).to.equal('{"sha":"62039f3","parents":["12b4472"],"children":[]}')
+    expect(jtw_commit(commits[2])).to.equal('{"sha":"967dbb2","parents":["12b4472"],"children":[]}')
+    expect(jtw_commit(commits[3])).to.equal(
+      '{"sha":"12b4472","parents":["afec16a","33bd179"],"children":["62039f3","967dbb2"]}'
+    )
+    expect(jtw_commit(commits[4])).to.equal('{"sha":"afec16a","parents":["5b59f30"],"children":["12b4472"]}')
+    expect(jtw_commit(commits[5])).to.equal('{"sha":"33bd179","parents":["5b59f30"],"children":["7a42c73","12b4472"]}')
+    expect(jtw_commit(commits[6])).to.equal('{"sha":"5b59f30","parents":["e2c32ae"],"children":["33bd179","afec16a"]}')
+    expect(jtw_commit(commits[7])).to.equal('{"sha":"e2c32ae","parents":[],"children":["5b59f30"]}')
+  })
+
+  // nodes
+  // console.log(jtw_node(nodes[0]))
+  it('expect nodes:', function() {
+    expect(8).to.equal(nodes.length)
+    expect(jtw_node(nodes[0])).to.equal('{"col":0,"row":0}')
+    expect(jtw_node(nodes[1])).to.equal('{"col":1,"row":1}')
+    expect(jtw_node(nodes[2])).to.equal('{"col":2,"row":2}')
+    expect(jtw_node(nodes[3])).to.equal('{"col":1,"row":3}')
+    expect(jtw_node(nodes[4])).to.equal('{"col":2,"row":4}')
+    expect(jtw_node(nodes[5])).to.equal('{"col":0,"row":5}')
+    expect(jtw_node(nodes[6])).to.equal('{"col":0,"row":6}')
+    expect(jtw_node(nodes[7])).to.equal('{"col":0,"row":7}')
+  })
+
+  // arcs
+  // console.log(arcs[0])
+  // console.log(jtw_arc(arcs[0]))
+  it('expect arcs:', function() {
+    expect(8).to.equal(arcs.length)
+  })
+})
+
+
+
 
 describe('sample_git_log.SimpleJSON', function() {
   const log_lines = sample_git_log.SimpleJSON()
