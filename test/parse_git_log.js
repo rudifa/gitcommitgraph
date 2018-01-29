@@ -97,10 +97,10 @@ describe('sample_git_log.A_single_merge', function() {
   // console.log('commits', commits)
   it('expect commits:', function() {
     expect(5).to.equal(commits.length)
-    expect(jtw_commit(commits[0])).to.equal('{"sha":"bca8687","parents":["a34017e","d01380d"],"children":[]}')
+    expect(jtw_commit(commits[0])).to.equal('{"sha":"bca8687","parents":["d01380d","a34017e"],"children":[]}')
     expect(jtw_commit(commits[1])).to.equal('{"sha":"d01380d","parents":["66f3a45"],"children":["bca8687"]}')
     expect(jtw_commit(commits[2])).to.equal('{"sha":"a34017e","parents":["66f3a45"],"children":["bca8687"]}')
-    expect(jtw_commit(commits[3])).to.equal('{"sha":"66f3a45","parents":["d14aa55"],"children":["a34017e","d01380d"]}')
+    expect(jtw_commit(commits[3])).to.equal('{"sha":"66f3a45","parents":["d14aa55"],"children":["d01380d","a34017e"]}')
     expect(jtw_commit(commits[4])).to.equal('{"sha":"d14aa55","parents":[],"children":["66f3a45"]}')
   })
 
@@ -109,8 +109,8 @@ describe('sample_git_log.A_single_merge', function() {
   it('expect nodes:', function() {
     expect(5).to.equal(nodes.length)
     expect(jtw_node(nodes[0])).to.equal('{"col":0,"row":0}')
-    expect(jtw_node(nodes[1])).to.equal('{"col":1,"row":1}')
-    expect(jtw_node(nodes[2])).to.equal('{"col":0,"row":2}')
+    expect(jtw_node(nodes[1])).to.equal('{"col":0,"row":1}')
+    expect(jtw_node(nodes[2])).to.equal('{"col":1,"row":2}')
     expect(jtw_node(nodes[3])).to.equal('{"col":0,"row":3}')
     expect(jtw_node(nodes[4])).to.equal('{"col":0,"row":4}')
   })
@@ -200,15 +200,15 @@ describe('sample_git_log.C_merge_3_into_master', function() {
   // console.log('commits', commits)
   it('expect commits:', function() {
     expect(8).to.equal(commits.length)
-    expect(jtw_commit(commits[0])).to.equal('{"sha":"59fe04b","parents":["6e3cc48","694959a"],"children":[]}')
+    expect(jtw_commit(commits[0])).to.equal('{"sha":"59fe04b","parents":["694959a","6e3cc48"],"children":[]}')
     expect(jtw_commit(commits[1])).to.equal('{"sha":"694959a","parents":["8857cdb"],"children":["59fe04b"]}')
-    expect(jtw_commit(commits[2])).to.equal('{"sha":"6e3cc48","parents":["69cccee","1b8f801"],"children":["59fe04b"]}')
+    expect(jtw_commit(commits[2])).to.equal('{"sha":"6e3cc48","parents":["1b8f801","69cccee"],"children":["59fe04b"]}')
     expect(jtw_commit(commits[3])).to.equal('{"sha":"1b8f801","parents":["8857cdb"],"children":["6e3cc48"]}')
-    expect(jtw_commit(commits[4])).to.equal('{"sha":"69cccee","parents":["5168e7a","6b2cb75"],"children":["6e3cc48"]}')
+    expect(jtw_commit(commits[4])).to.equal('{"sha":"69cccee","parents":["6b2cb75","5168e7a"],"children":["6e3cc48"]}')
     expect(jtw_commit(commits[5])).to.equal('{"sha":"6b2cb75","parents":["8857cdb"],"children":["69cccee"]}')
     expect(jtw_commit(commits[6])).to.equal('{"sha":"5168e7a","parents":["8857cdb"],"children":["69cccee"]}')
     expect(jtw_commit(commits[7])).to.equal(
-      '{"sha":"8857cdb","parents":[],"children":["5168e7a","694959a","1b8f801","6b2cb75"]}'
+      '{"sha":"8857cdb","parents":[],"children":["694959a","1b8f801","6b2cb75","5168e7a"]}'
     )
   })
 
@@ -217,12 +217,12 @@ describe('sample_git_log.C_merge_3_into_master', function() {
   it('expect nodes:', function() {
     expect(8).to.equal(nodes.length)
     expect(jtw_node(nodes[0])).to.equal('{"col":0,"row":0}')
-    expect(jtw_node(nodes[1])).to.equal('{"col":1,"row":1}')
-    expect(jtw_node(nodes[2])).to.equal('{"col":0,"row":2}')
-    expect(jtw_node(nodes[3])).to.equal('{"col":2,"row":3}')
-    expect(jtw_node(nodes[4])).to.equal('{"col":0,"row":4}')
-    expect(jtw_node(nodes[5])).to.equal('{"col":3,"row":5}')
-    expect(jtw_node(nodes[6])).to.equal('{"col":0,"row":6}')
+    expect(jtw_node(nodes[1])).to.equal('{"col":0,"row":1}')
+    expect(jtw_node(nodes[2])).to.equal('{"col":1,"row":2}')
+    expect(jtw_node(nodes[3])).to.equal('{"col":1,"row":3}')
+    expect(jtw_node(nodes[4])).to.equal('{"col":2,"row":4}')
+    expect(jtw_node(nodes[5])).to.equal('{"col":2,"row":5}')
+    expect(jtw_node(nodes[6])).to.equal('{"col":3,"row":6}')
     expect(jtw_node(nodes[7])).to.equal('{"col":0,"row":7}')
   })
 
@@ -234,7 +234,7 @@ describe('sample_git_log.C_merge_3_into_master', function() {
   })
 })
 
-describe('sample_git_log.D_octo_merge_3_into_master', function() {
+describe('sample_git_log.F_octo_merge_3_into_master', function() {
   const log_lines = sample_git_log.D_octo_merge_3_into_master() // from --order-topo
   // console.log('log_lines', log_lines)
 
@@ -257,14 +257,14 @@ describe('sample_git_log.D_octo_merge_3_into_master', function() {
     expect(8).to.equal(commits.length)
     expect(jtw_commit(commits[0])).to.equal('{"sha":"6b49d9e","parents":["3c36210"],"children":[]}')
     expect(jtw_commit(commits[1])).to.equal(
-      '{"sha":"3c36210","parents":["d72c16c","a759c98","d7a9ecb","d8c031b"],"children":["6b49d9e"]}'
+      '{"sha":"3c36210","parents":["d8c031b","d7a9ecb","a759c98","d72c16c"],"children":["6b49d9e"]}'
     )
     expect(jtw_commit(commits[2])).to.equal('{"sha":"d8c031b","parents":["d275fba"],"children":["3c36210"]}')
     expect(jtw_commit(commits[3])).to.equal('{"sha":"d7a9ecb","parents":["d275fba"],"children":["3c36210"]}')
     expect(jtw_commit(commits[4])).to.equal('{"sha":"a759c98","parents":["d275fba"],"children":["3c36210"]}')
     expect(jtw_commit(commits[5])).to.equal('{"sha":"d72c16c","parents":["d275fba"],"children":["3c36210"]}')
     expect(jtw_commit(commits[6])).to.equal(
-      '{"sha":"d275fba","parents":["3cfe6bd"],"children":["d72c16c","a759c98","d7a9ecb","d8c031b"]}'
+      '{"sha":"d275fba","parents":["3cfe6bd"],"children":["d8c031b","d7a9ecb","a759c98","d72c16c"]}'
     )
     expect(jtw_commit(commits[7])).to.equal('{"sha":"3cfe6bd","parents":[],"children":["d275fba"]}')
   })
@@ -275,10 +275,10 @@ describe('sample_git_log.D_octo_merge_3_into_master', function() {
     expect(8).to.equal(nodes.length)
     expect(jtw_node(nodes[0])).to.equal('{"col":0,"row":0}')
     expect(jtw_node(nodes[1])).to.equal('{"col":0,"row":1}')
-    expect(jtw_node(nodes[2])).to.equal('{"col":3,"row":2}')
-    expect(jtw_node(nodes[3])).to.equal('{"col":2,"row":3}')
-    expect(jtw_node(nodes[4])).to.equal('{"col":1,"row":4}')
-    expect(jtw_node(nodes[5])).to.equal('{"col":0,"row":5}')
+    expect(jtw_node(nodes[2])).to.equal('{"col":0,"row":2}')
+    expect(jtw_node(nodes[3])).to.equal('{"col":1,"row":3}')
+    expect(jtw_node(nodes[4])).to.equal('{"col":2,"row":4}')
+    expect(jtw_node(nodes[5])).to.equal('{"col":3,"row":5}')
     expect(jtw_node(nodes[6])).to.equal('{"col":0,"row":6}')
     expect(jtw_node(nodes[7])).to.equal('{"col":0,"row":7}')
   })
@@ -291,7 +291,7 @@ describe('sample_git_log.D_octo_merge_3_into_master', function() {
   })
 })
 
-describe('sample_git_log.E_demo_col_init_error', function() {
+describe('sample_git_log.G_demo_col_init_error', function() {
   const log_lines = sample_git_log.E_demo_col_init_error() // from --order-topo
   // console.log('log_lines', log_lines)
 
@@ -316,7 +316,7 @@ describe('sample_git_log.E_demo_col_init_error', function() {
     expect(jtw_commit(commits[1])).to.equal('{"sha":"62039f3","parents":["12b4472"],"children":[]}')
     expect(jtw_commit(commits[2])).to.equal('{"sha":"967dbb2","parents":["12b4472"],"children":[]}')
     expect(jtw_commit(commits[3])).to.equal(
-      '{"sha":"12b4472","parents":["afec16a","33bd179"],"children":["62039f3","967dbb2"]}'
+      '{"sha":"12b4472","parents":["33bd179","afec16a"],"children":["62039f3","967dbb2"]}'
     )
     expect(jtw_commit(commits[4])).to.equal('{"sha":"33bd179","parents":["5b59f30"],"children":["7a42c73","12b4472"]}')
     expect(jtw_commit(commits[5])).to.equal('{"sha":"afec16a","parents":["5b59f30"],"children":["12b4472"]}')
@@ -333,7 +333,7 @@ describe('sample_git_log.E_demo_col_init_error', function() {
     expect(jtw_node(nodes[2])).to.equal('{"col":2,"row":2}')
     expect(jtw_node(nodes[3])).to.equal('{"col":1,"row":3}')
     expect(jtw_node(nodes[4])).to.equal('{"col":0,"row":4}')
-    expect(jtw_node(nodes[5])).to.equal('{"col":1,"row":5}')
+    expect(jtw_node(nodes[5])).to.equal('{"col":2,"row":5}')
     expect(jtw_node(nodes[6])).to.equal('{"col":0,"row":6}')
     expect(jtw_node(nodes[7])).to.equal('{"col":0,"row":7}')
   })
@@ -368,7 +368,7 @@ describe('sample_git_log.SimpleJSON', function() {
   it('expect commits:', function() {
     expect(60).to.equal(commits.length)
     expect(jtw_commit(commits[0])).to.equal('{"sha":"611748a","parents":["07a1266"],"children":[]}')
-    expect(jtw_commit(commits[1])).to.equal('{"sha":"07a1266","parents":["d5584f0","5f6f8f3"],"children":["611748a"]}')
+    expect(jtw_commit(commits[1])).to.equal('{"sha":"07a1266","parents":["5f6f8f3","d5584f0"],"children":["611748a"]}')
     expect(jtw_commit(commits[59])).to.equal('{"sha":"a1c581b","parents":[],"children":["baab08b"]}')
   })
 
