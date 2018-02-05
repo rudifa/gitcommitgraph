@@ -82,7 +82,7 @@ function plot_node_texts(chart, nodes, xSc, ySc, rowWidth, rowHeight, colSpacing
   // alternate
 
   const labelWithBg1 = labelWithBg()
-    .text(function (d) {
+    .text(function(d) {
       return d[1]
     })
     .bgColor(labelBgColor)
@@ -121,7 +121,7 @@ function plot_node_texts(chart, nodes, xSc, ySc, rowWidth, rowHeight, colSpacing
 
 function plot_git_log(dir, nodes_and_arcs, arc_style) {
   // console.log('plot_git_log:', 'dir=', dir, 'arc_style=', arc_style)
-  const { nodes, arcs, aux_nodes } = nodes_and_arcs
+  const { nodes, arcs, aux_nodes, old_nodes } = nodes_and_arcs
 
   function arc_path(arc_style) {
     const paths = {
@@ -167,6 +167,8 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
 
   plot_aux_nodes(aux_nodes) // development only
 
+  plot_old_nodes(old_nodes) // development only
+
   function plot_nodes(nodes) {
     chart
       .selectAll('.node')
@@ -184,13 +186,13 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
       .attr('fill', 'white')
   }
 
-  function plot_aux_nodes(nodes) {
+  function plot_aux_nodes(anodes) {
     chart
-      .selectAll('.node')
-      .data(nodes)
+      .selectAll('.anode')
+      .data(anodes)
       .enter()
       .append('circle')
-      .attr('r', 4)
+      .attr('r', 2)
       .attr('cx', function(d) {
         return xSc(d.col)
       })
@@ -199,6 +201,23 @@ function plot_git_log(dir, nodes_and_arcs, arc_style) {
       })
       .attr('stroke', 'black')
       .attr('fill', 'red')
+  }
+
+  function plot_old_nodes(onodes) {
+    chart
+      .selectAll('.onode')
+      .data(onodes)
+      .enter()
+      .append('circle')
+      .attr('r', 6)
+      .attr('cx', function(d) {
+        return xSc(d.col)
+      })
+      .attr('cy', function(d) {
+        return ySc(d.row)
+      })
+      .attr('stroke', 'red')
+      .attr('fill', 'transparent')
   }
 
   // return svg command sequence for straight line from p0 to p1

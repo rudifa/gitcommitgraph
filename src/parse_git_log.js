@@ -16,9 +16,9 @@ module.exports = {
  */
 
 function get_commit_nodes_and_arcs(commit_objects, verbose) {
-  const { nodes, node_dict } = get_commit_nodes(commit_objects, verbose)
+  const { nodes, node_dict, old_nodes } = get_commit_nodes(commit_objects, verbose)
   const { arcs, aux_nodes } = get_commit_arcs_and_aux_nodes(nodes, node_dict)
-  return { nodes: nodes, arcs: arcs, aux_nodes: aux_nodes }
+  return { nodes: nodes, arcs: arcs, aux_nodes: aux_nodes, old_nodes: old_nodes }
 }
 
 var console = { log: function() {} } // comment out to enable log
@@ -92,7 +92,7 @@ function _parse_refs(line) {
 
 function get_commit_objects_from_lines(lines) {
   // lines: input array of text lines, e.g.
-  // | * ¡¨¡bcc51ee¡¨¡ad82167¡¨¡ (tag: refs/tags/rudifa)¡¨¡Added the Prettyprint extension:¡¨¡2013-11-03¡¨¡Rudi Farkas¡¨¡
+  // ¡¨¡bcc51ee¡¨¡ad82167¡¨¡ (tag: refs/tags/rudifa)¡¨¡Added the Prettyprint extension:¡¨¡2013-11-03¡¨¡Rudi Farkas¡¨¡
   // Split on separator string '¡¨¡' and return an object for each matching line
 
   const objects = []
@@ -127,21 +127,22 @@ function get_commit_objects_from_lines(lines) {
 
 function get_commit_nodes(commit_objects, verbose) {
   if (verbose) {
-    // console = window.console
+    // console = window.console // uncomment to enable logs
   }
 
   // 1. from array of commits, create array of nodes and the node_dict
 
   const nodes = []
   const node_dict = {}
+  const old_nodes = []
   for (var i = 0; i < commit_objects.length; i++) {
     const commit = commit_objects[i]
     commit.children = []
     const node = {
-      col: -1, // == unassigned
-      cols: [],
+      col: -1,
       row: i,
-      commit: commit
+      commit: commit,
+      col_old: -1
     }
     nodes.push(node)
     node_dict[node.commit.sha] = node
@@ -171,84 +172,124 @@ function get_commit_nodes(commit_objects, verbose) {
 
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i]
-    console.log('i=', i)
+    console.log(`i= ${i}  nc:np ${node.commit.children.length}:${node.commit.parents.length}`)
 
     if (node.commit.children.length == 0) {
       colowners.set_node_col(node, colowners.first_free_col())
-      node.cols.unshift(node.col)
       console.log(`    ${node.commit.sha} childless, takes a free col ${node.col}`)
     }
 
     if (node.commit.children.length > 1) {
-      // if (node.col < 0) {
       // branch node
       sort_children_by_col(node, node_dict)
       let cnode = child(0, node, node_dict)
+
+      const node_col_old = node.col
+
       if (colowners.owns_its_col(cnode)) {
-        console.log(`    ${node.commit.sha} branch frees col ${cnode.col}`)
+        console.log(`    ${node.commit.sha} branch frees col ${node.col}`)
         colowners.free_col(node.col)
         colowners.set_node_col(node, cnode.col)
-        node.cols.unshift(node.col)
         console.log(`    ${node.commit.sha} branch takes col from child[${0}]`, cnode.col)
       }
 
       for (let j = 1; j < node.commit.children.length; j++) {
         let cnode = child(j, node, node_dict)
+
+        if (node_col_old != cnode.col && node.row - cnode.row > 1) {
+          node.col_old = node_col_old
+        }
+
         if (colowners.owns_its_col(cnode)) {
           console.log(`    ${node.commit.sha} branch frees child ${cnode.commit.sha} col ${cnode.col}`)
           colowners.free_col(cnode.col)
         }
       }
-      // }
     }
 
     // now this node is done, save its max_used_col before handling parent nodes
     node.max_used_col = colowners.max_used_col()
 
-    if (node.commit.parents.length > 0) {
-      // plain or merge node
+    if (node.commit.parents.length == 1) {
       const pnode_0 = parent(0, node, node_dict)
-      // console.log(pnode_0.col)
       if (pnode_0.col < 0) {
         colowners.set_node_col(pnode_0, node.col)
-        pnode_0.cols.unshift(pnode_0.col)
-        console.log(`    ${node.commit.sha} merge pushing own col to parent_0 ${pnode_0.commit.sha}:`, pnode_0.col)
+        console.log(`    ${node.commit.sha} pushing own col to parent_0 ${pnode_0.commit.sha}: (${pnode_0.col})`)
       } else {
-        console.log(`--- ${node.commit.sha} merge: parent_${0} ${pnode_0.commit.sha}: already has col ${pnode_0.col}`)
+        console.log(`--- ${node.commit.sha} parent_${0} ${pnode_0.commit.sha}: already has col (${pnode_0.col})`)
+      }
+    }
+
+    if (node.commit.parents.length > 1) {
+      // plain or merge node
+      const pnode_0 = parent(0, node, node_dict)
+      const pnode_1 = parent(1, node, node_dict)
+
+      const patt_1a_applies = pnode_0.col < 0 && pnode_1.col >= 0 && pnode_1.row > node.row + 1
+      if (patt_1a_applies) {
+        colowners.set_node_col(pnode_0, colowners.first_free_col())
+        console.log(
+          `patt_1a ${node.commit.sha} merge pushing free col to parent_${0} ${pnode_0.commit.sha}: (${pnode_0.col},${
+            pnode_0.row
+          })`
+        )
+        continue
+      }
+
+      const patt_2a_applies = pnode_1.col < 0 && pnode_0.col >= 0 && pnode_0.row == node.row + 1 && 0
+      if (patt_2a_applies) {
+        colowners.set_node_col(pnode_1, node.col)
+        console.log(
+          `patt_2a ${node.commit.sha} pushing own col to parent_1 ${pnode_1.commit.sha}: (${pnode_1.col},${
+            pnode_1.row
+          })`
+        )
+        continue
+      }
+
+      if (pnode_0.col < 0 && pnode_1.col < 0) {
+        console.log(`22  ${node.commit.sha} parent_0 and parent_1 uninitialized`)
+      }
+
+      if (pnode_0.col < 0) {
+        colowners.set_node_col(pnode_0, node.col)
+        console.log(
+          `    ${node.commit.sha} pushing own col to parent_0 ${pnode_0.commit.sha}: (${pnode_0.col},${pnode_0.row})`
+        )
+      } else {
+        console.log(`--- ${node.commit.sha} parent_${0} ${pnode_0.commit.sha}: already has col ${pnode_0.col}`)
       }
       for (let j = 1; j < node.commit.parents.length; j++) {
         // merge node
         const pnode_j = parent(j, node, node_dict)
+
         if (pnode_j.col < 0) {
           colowners.set_node_col(pnode_j, colowners.first_free_col())
-          pnode_j.cols.unshift(pnode_j.col)
           console.log(
-            `    ${node.commit.sha} merge pushing free col to parent_${j} ${pnode_j.commit.sha}:`,
-            pnode_j.col
+            `    ${node.commit.sha} merge pushing free col to parent_${j} ${pnode_j.commit.sha}: (${pnode_j.col},${
+              pnode_j.row
+            })`
           )
+
+          //old_nodes.push({ col: pnode_j.col, row: pnode_j.row }) // for info only
+
+
         } else {
           console.log(
-            `--- ${node.commit.sha} merge: parent_${j} ${pnode_j.commit.sha}: already has a value ${pnode_j.col}`
+            `--- ${node.commit.sha} merge: parent_${j} ${pnode_j.commit.sha}: already has col (${pnode_j.col},${
+              pnode_j.row
+            })`
           )
         }
       }
     }
 
-    // console.log(JSON.stringify(node))
+    console.log('    ' + colowners.toString())
 
     if (node.col < 0) {
       console.log('***', 'node.col < 0')
     }
   } // end of i loop
-  // console.log('nodes done')
-  // for (let i = 0; i < nodes.length; i++) {
-  //   const node = nodes[i]
-  //   console.log(
-  //     `i= ${i}  sha= ${node.commit.sha}  col= ${node.col} cols=  ${JSON.stringify(node.cols)}  max_col= ${
-  //       node.max_used_col
-  //     }`
-  //   )
-  // }
 
   console.log('4. nodes done')
 
@@ -270,9 +311,15 @@ function get_commit_nodes(commit_objects, verbose) {
     }
     return true
   }
+
+  for (let i = 0; i < old_nodes.length; i++) {
+    console.log(`old_node (${old_nodes[i].col},${old_nodes[i].row})`)
+  }
+
   return {
     nodes: nodes,
-    node_dict: node_dict
+    node_dict: node_dict,
+    old_nodes: old_nodes
   }
 }
 
@@ -286,26 +333,34 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
   console.log('get_commit_arcs_and_aux_nodes')
   const arcs = []
   const aux_nodes = []
+  const halfColowners = new Colowners()
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i]
+    const use_aux_nodes = 4
+
     for (let j = 0; j < node.commit.parents.length; j++) {
       const pnode = parent(j, node, node_dict)
-      const use_aux_nodes = 1
-      if (use_aux_nodes && pnode.cols[1] != undefined && pnode.cols[1] != node.col && pnode.row - node.row > 1) {
-        const aux_node = { row: pnode.row - 1, col: pnode.cols[1] }
-        aux_nodes.push(aux_node)
-        arcs.push([node, aux_node])
-        arcs.push([aux_node, pnode])
-        console.log(
-          `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${
-            pnode.row
-          })  aux_node (${aux_node.col},${aux_node.row})`
-        )
-      } else {
+
+      if (use_aux_nodes == 0) {
         arcs.push([node, pnode])
         console.log(
           `i= ${i}  sha= ${node.commit.sha} node (${node.col},${node.row})  pnode (${pnode.col},${pnode.row})`
         )
+      }
+    }
+
+    if (use_aux_nodes == 4) {
+      for (let j = 0; j < node.commit.children.length; j++) {
+        let cnode = child(j, node, node_dict)
+        if (j > 0 && node.col_old - node.col > 1 && node.row - cnode.row > 2) {
+          const aux_node = { col: node.col_old, row: node.row - 1 }
+          aux_nodes.push(aux_node)
+          arcs.push([aux_node, node])
+          arcs.push([cnode, aux_node])
+          console.log(`i= ${i} j= ${j}  sha= ${node.commit.sha} node (${node.col_old};${node.col},${node.row})  cnode (${cnode.col},${cnode.row})  aux_node (${aux_node.col},${aux_node.row})`)
+        } else {
+          arcs.push([cnode, node])
+        }
       }
     }
   }
@@ -318,6 +373,10 @@ function get_commit_arcs_and_aux_nodes(nodes, node_dict) {
 
 function sort_children_by_col(node, node_dict) {
   node.commit.children.sort((a, b) => node_dict[a].col - node_dict[b].col)
+}
+
+function sort_parents_by_row(node, node_dict) {
+  node.commit.parents.sort((a, b) => node_dict[a].row - node_dict[b].row)
 }
 
 function child(i, node, node_dict) {

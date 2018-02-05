@@ -1,15 +1,6 @@
 var expect    = require('chai').expect;
 const exec = require('../src/proc-exec');
 
-describe('sample test', function() {
-  it('should pass', function() {
-    expect(2).to.equal(1+1);
-  });
-  xit('should fail', function() {
-    expect(2).to.equal(1);
-  });
-});
-
 describe('proc-exec', function() {
   it('should execute the command and get the response', function(done) {
     const command = 'git --version';

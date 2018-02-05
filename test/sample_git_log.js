@@ -1,11 +1,14 @@
 
 module.exports = {
-  A_single_merge:             A_single_merge,
-  B_branches_only:            B_branches_only,
-  C_merge_3_into_master:      C_merge_3_into_master,
-  D_octo_merge_3_into_master: D_octo_merge_3_into_master,
-  E_demo_col_init_error:      E_demo_col_init_error,
-  SimpleJSON: SimpleJSON
+  A_single_merge__topo:             A_single_merge__topo,
+  B_branches_only__topo:            B_branches_only__topo,
+  C_merge_3_into_master__topo:      C_merge_3_into_master__topo,
+  F_octo_merge_3_into_master__topo: F_octo_merge_3_into_master__topo,
+  G_demo_col_init_error__topo:      G_demo_col_init_error__topo,
+  G_demo_col_init_error__date:      G_demo_col_init_error__date,
+  H_criss_cross__topo:              H_criss_cross__topo,
+  K_simple_branch_merge__topo:      K_simple_branch_merge__topo,
+  SimpleJSON:                       SimpleJSON
 };
 
 /*
@@ -13,7 +16,7 @@ module.exports = {
 */
 
 
-function A_single_merge() {
+function A_single_merge__topo() {
   function heredoc() { /*
         *   ¡¨¡bca8687¡¨¡a34017e d01380d¡¨¡Merge branch 'refs/heads/b1'¡¨¡Fri Nov 24 19:53:00 2017 +0100¡¨¡rudifa¡¨¡ (HEAD -> master)¡¨¡
         |\
@@ -27,7 +30,7 @@ function A_single_merge() {
 }
 
 
-function B_branches_only() {
+function B_branches_only__topo() {
   function heredoc() { /*
         * ¡¨¡7165a30¡¨¡1f7f761¡¨¡6 on master¡¨¡Wed Nov 29 09:53:59 2017 +0100¡¨¡rudifa¡¨¡ (HEAD -> master)¡¨¡
         | * ¡¨¡4b8a42d¡¨¡1f7f761¡¨¡5 on branch_4¡¨¡Wed Nov 29 09:52:56 2017 +0100¡¨¡rudifa¡¨¡ (branch_4)¡¨¡
@@ -44,7 +47,7 @@ function B_branches_only() {
 }
 
 
-function C_merge_3_into_master() {
+function C_merge_3_into_master__topo() {
   function heredoc() { /*
     *   ¡¨¡59fe04b¡¨¡6e3cc48 694959a¡¨¡Merge branch 'branch3'¡¨¡Fri Dec 1 17:48:57 2017 +0100¡¨¡rudifa¡¨¡ (HEAD -> master)¡¨¡
     |\
@@ -66,7 +69,7 @@ function C_merge_3_into_master() {
 
 
 
-function D_octo_merge_3_into_master() {
+function F_octo_merge_3_into_master__topo() {
   function heredoc() { /*
     * ¡¨¡6b49d9e¡¨¡3c36210¡¨¡master¡¨¡Fri Dec 1 19:26:41 2017 +0100¡¨¡rudifa¡¨¡ (HEAD -> master)¡¨¡
     *---.   ¡¨¡3c36210¡¨¡d72c16c a759c98 d7a9ecb d8c031b¡¨¡Merge branches 'branch1', 'branch2' and 'branch3'¡¨¡Fri Dec 1 19:26:40 2017 +0100¡¨¡rudifa¡¨¡¡¨¡
@@ -86,7 +89,7 @@ function D_octo_merge_3_into_master() {
 
 
 
-function E_demo_col_init_error() {
+function G_demo_col_init_error__topo() {
   function heredoc() { /*
     * ¡¨¡7a42c73¡¨¡33bd179¡¨¡commit 8 on branch bre¡¨¡Fri Nov 24 23:22:37 2017 +0100¡¨¡rudifa¡¨¡ (bre)¡¨¡
     | * ¡¨¡62039f3¡¨¡12b4472¡¨¡commit 7 on brc¡¨¡Fri Nov 24 23:09:19 2017 +0100¡¨¡rudifa¡¨¡ (brd)¡¨¡
@@ -105,6 +108,57 @@ function E_demo_col_init_error() {
     return heredoc.toString().replace(/'/g,"").split('\n').slice(1,-1).map(function(s) {return s.trim()});
 }
 
+function G_demo_col_init_error__date() {
+  function heredoc() { /*
+* ¡¨¡7a42c73¡¨¡33bd179¡¨¡commit 8 on branch bre¡¨¡Fri Nov 24 23:22:37 2017 +0100¡¨¡rudifa¡¨¡ (bre)¡¨¡
+| * ¡¨¡62039f3¡¨¡12b4472¡¨¡commit 7 on brc¡¨¡Fri Nov 24 23:09:19 2017 +0100¡¨¡rudifa¡¨¡ (brd)¡¨¡
+| | * ¡¨¡967dbb2¡¨¡12b4472¡¨¡commit 5 on master¡¨¡Fri Nov 24 23:05:01 2017 +0100¡¨¡rudifa¡¨¡ (HEAD -> master)¡¨¡
+| |/
+| *   ¡¨¡12b4472¡¨¡afec16a 33bd179¡¨¡Merge branch 'refs/heads/brb'¡¨¡Fri Nov 24 23:03:26 2017 +0100¡¨¡rudifa¡¨¡¡¨¡
+| |\
+| |/
+|/|
+| * ¡¨¡afec16a¡¨¡5b59f30¡¨¡commit master 3¡¨¡Fri Nov 24 22:59:51 2017 +0100¡¨¡rudifa¡¨¡¡¨¡
+* | ¡¨¡33bd179¡¨¡5b59f30¡¨¡commit brb 2¡¨¡Fri Nov 24 22:58:31 2017 +0100¡¨¡rudifa¡¨¡ (brb)¡¨¡
+|/
+* ¡¨¡5b59f30¡¨¡e2c32ae¡¨¡master 1¡¨¡Fri Nov 24 22:55:28 2017 +0100¡¨¡rudifa¡¨¡¡¨¡
+* ¡¨¡e2c32ae¡¨¡¡¨¡initial commit¡¨¡Fri Nov 24 22:54:03 2017 +0100¡¨¡rudifa¡¨¡¡¨¡
+*/};
+return heredoc.toString().replace(/'/g,"").split('\n').slice(1,-1).map(function(s) {return s.trim()});
+}
+
+
+function H_criss_cross__topo() {
+  function heredoc() { /*
+¡¨¡1e95b1e¡¨¡ee60e17¡¨¡m commit¡¨¡Wed Jan 3 12:00:28 2018 +0100¡¨¡rudifa¡¨¡ (HEAD -> master)¡¨¡
+¡¨¡ee60e17¡¨¡f405347 8e4c7f3¡¨¡Merge branch 'refs/heads/A'¡¨¡Wed Jan 3 12:00:03 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡8e4c7f3¡¨¡a577ba0 f2d149f¡¨¡Merge branch 'refs/heads/master' into A¡¨¡Wed Jan 3 11:58:50 2018 +0100¡¨¡rudifa¡¨¡ (A)¡¨¡
+¡¨¡a577ba0¡¨¡c64c45b¡¨¡a commit¡¨¡Wed Jan 3 11:57:11 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡c64c45b¡¨¡9c94f15 3376889¡¨¡Merge branch 'refs/heads/C' into A¡¨¡Wed Jan 3 11:56:48 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡9c94f15¡¨¡ba94fb4 bd181e5¡¨¡Merge branch 'refs/heads/B' into A¡¨¡Wed Jan 3 11:56:08 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡ba94fb4¡¨¡ebbcbb9¡¨¡a commit¡¨¡Wed Jan 3 11:54:50 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡f405347¡¨¡f2d149f¡¨¡m commit¡¨¡Wed Jan 3 11:59:32 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡f2d149f¡¨¡de42b32¡¨¡a commit¡¨¡Wed Jan 3 11:58:24 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡de42b32¡¨¡3376889¡¨¡m commit¡¨¡Wed Jan 3 11:53:54 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡3376889¡¨¡bd181e5¡¨¡m commit¡¨¡Wed Jan 3 11:53:13 2018 +0100¡¨¡rudifa¡¨¡ (C)¡¨¡
+¡¨¡bd181e5¡¨¡ebbcbb9¡¨¡m commit¡¨¡Wed Jan 3 11:52:29 2018 +0100¡¨¡rudifa¡¨¡ (B)¡¨¡
+¡¨¡ebbcbb9¡¨¡d4575d5¡¨¡m commit¡¨¡Wed Jan 3 11:49:14 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡d4575d5¡¨¡¡¨¡initial commit¡¨¡Wed Jan 3 11:48:28 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+*/};
+return heredoc.toString().replace(/'/g,"").split('\n').slice(1,-1).map(function(s) {return s.trim()});
+}
+
+
+function K_simple_branch_merge__topo() {
+  function heredoc() { /*
+¡¨¡33de39b¡¨¡a843eba¡¨¡m commit¡¨¡Thu Jan 4 20:56:48 2018 +0100¡¨¡rudifa¡¨¡ (HEAD -> master)¡¨¡
+¡¨¡a843eba¡¨¡0d4dff8 063b4a7¡¨¡Merge branch 'A'¡¨¡Thu Jan 4 20:55:31 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡063b4a7¡¨¡0d4dff8¡¨¡a commit¡¨¡Thu Jan 4 20:54:55 2018 +0100¡¨¡rudifa¡¨¡ (A)¡¨¡
+¡¨¡0d4dff8¡¨¡dcecf1e¡¨¡m commit¡¨¡Thu Jan 4 20:54:12 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+¡¨¡dcecf1e¡¨¡¡¨¡inital>¡¨¡Thu Jan 4 20:53:36 2018 +0100¡¨¡rudifa¡¨¡¡¨¡
+*/};
+return heredoc.toString().replace(/'/g,"").split('\n').slice(1,-1).map(function(s) {return s.trim()});
+}
 
 
 function SimpleJSON()  {
