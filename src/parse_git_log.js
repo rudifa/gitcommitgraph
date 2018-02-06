@@ -127,7 +127,7 @@ function get_commit_objects_from_lines(lines) {
 
 function get_commit_nodes(commit_objects, verbose) {
   if (verbose) {
-    // console = window.console // uncomment to enable logs
+    console = window.console // uncomment to enable logs
   }
 
   // 1. from array of commits, create array of nodes and the node_dict
@@ -156,7 +156,6 @@ function get_commit_nodes(commit_objects, verbose) {
 
   // console.log('adding children, from i=0 down')
   for (let i = 0; i < nodes.length; i++) {
-    // for (var i = nodes.length - 1; i >= 0; i--) {
     const node = nodes[i]
     const parents = node.commit.parents // array of shas
     for (let j = 0; j < parents.length; j++) {
@@ -173,6 +172,7 @@ function get_commit_nodes(commit_objects, verbose) {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i]
     console.log(`i= ${i}  nc:np ${node.commit.children.length}:${node.commit.parents.length}`)
+    console.log(`i= ${i}  nc:np ${node.commit.children}:${node.commit.parents}`)
 
     if (node.commit.children.length == 0) {
       colowners.set_node_col(node, colowners.first_free_col())
