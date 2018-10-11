@@ -87,3 +87,19 @@ dev14, tag looks_promising_but: problem in ElectronTutorial;
   we place the 2nd parent underneath on the same col; then the arc from merge node
   to the 1st parent overlaps with that to the 2nd parent
   Looks like we can place the 1st parent on the same col, but not the 2nd parent
+
+  #----------------------------------------------------------
+  2018-10-11
+
+  Updated packages with
+  `ncu -u   # npm-check-updates`
+
+  Failed to `npm start`, the syntax error was suggestive of python 2.7
+
+  Updated conda and anaconda (Python 3.6.6)
+
+  Created environment python27 (Python 2.7.15) and activated it in the bash terminal session.
+
+  Now `npm start` succeeds in python27 environment.
+
+  However, it also succeeds in python 3.6 (looks like python27 was needed in some system configuration process after the update of packages).
