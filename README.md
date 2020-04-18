@@ -103,3 +103,6 @@ dev14, tag looks_promising_but: problem in ElectronTutorial;
   Now `npm start` succeeds in python27 environment.
 
   However, it also succeeds in python 3.6 (looks like python27 was needed in some system configuration process after the update of packages).
+
+  Ran `npm install`. Starts.
+  
