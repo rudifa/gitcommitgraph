@@ -48,25 +48,25 @@
         }
     },
     "dependencies": {
-        "colormap": "^2.3.1",
-        "d3": "^5.15.1",
+        "colormap": "^2.3.2",
+        "d3": "^7.1.1",
         "electron-compile": "^6.4.4",
         "electron-reload": "^1.5.0",
-        "electron-settings": "^3.2.0",
+        "electron-settings": "^4.0.2",
         "electron-squirrel-startup": "^1.0.0"
     },
     "devDependencies": {
         "babel-plugin-transform-async-to-generator": "^6.24.1",
         "babel-preset-env": "^1.7.0",
         "babel-preset-react": "^6.24.1",
-        "chai": "^4.2.0",
+        "chai": "^4.3.4",
         "electron-forge": "^5.2.4",
-        "electron-mocha": "^8.2.1",
+        "electron-mocha": "^10.1.0",
         "electron-prebuilt-compile": "8.2.0",
-        "eslint": "^6.8.0",
-        "eslint-config-airbnb": "^18.1.0",
-        "eslint-plugin-import": "^2.20.2",
-        "eslint-plugin-jsx-a11y": "^6.2.3",
-        "eslint-plugin-react": "^7.19.0"
+        "eslint": "^8.2.0",
+        "eslint-config-airbnb": "^19.0.0",
+        "eslint-plugin-import": "^2.25.3",
+        "eslint-plugin-jsx-a11y": "^6.5.1",
+        "eslint-plugin-react": "^7.27.0"
     }
 }
